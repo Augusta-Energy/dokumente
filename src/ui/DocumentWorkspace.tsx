@@ -2,6 +2,12 @@ import { useEffect, type ReactElement, type ReactNode } from 'react'
 import { usePDF, type DocumentProps } from '@react-pdf/renderer'
 import { Button } from './components/Button'
 
+/** react-pdfs Typen sagen `error: string | null`, zur Laufzeit ist es aber oft ein Error-Objekt
+ *  (`String(error)` würde dann „Error: …“ anzeigen) – daher hier auf `unknown` prüfen. */
+function fehlermeldung(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
 type Props = {
   /** Fertiges react-pdf-<Document>, bereits entprellt (useDebouncedValue) */
   dokument: ReactElement<DocumentProps>
@@ -19,7 +25,8 @@ export function DocumentWorkspace({ dokument, dateiname, fehlendeFelder, onBeisp
     aktualisiere(dokument)
   }, [dokument, aktualisiere])
 
-  const bereit = Boolean(instanz.url) && !instanz.loading && fehlendeFelder.length === 0
+  const bereit = Boolean(instanz.url) && !instanz.loading && !instanz.error && fehlendeFelder.length === 0
+  const fehlertext = fehlermeldung(instanz.error)
 
   return (
     <div className="grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
@@ -45,7 +52,7 @@ export function DocumentWorkspace({ dokument, dateiname, fehlendeFelder, onBeisp
         <div className="mt-3 min-h-6 text-sm" aria-live="polite">
           {instanz.loading ? <p className="text-muted">Vorschau wird aktualisiert …</p> : null}
           {instanz.error ? (
-            <p className="border border-red-700 bg-red-50 p-3 text-red-800">Die Vorschau konnte nicht erstellt werden: {String(instanz.error)}</p>
+            <p role="alert" className="border border-red-700 bg-red-50 p-3 text-red-800">Die Vorschau konnte nicht erstellt werden: {fehlertext}</p>
           ) : null}
           {fehlendeFelder.length ? (
             <p className="text-ink-600"><span className="font-medium">Bitte ergänze:</span> {fehlendeFelder.join(', ')}</p>
