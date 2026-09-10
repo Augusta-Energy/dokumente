@@ -25,6 +25,13 @@ describe('VergleichDocument', () => {
     const pdf = await renderToBuffer(<VergleichDocument daten={d} absender={standardAbsender} />)
     expect(seitenAnzahl(pdf)).toBe(3)
   })
+  it('bleibt bei sichtbarem Honorar UND Hinweisen auf Seite 3 bei drei Seiten', async () => {
+    const d = beispielVergleich('2026-09-10')
+    d.honorar.anzeigen = true
+    d.vergleich.hinweise = 'Der Wechsel erfolgt zum 01.01.2027. Bitte senden Sie uns die letzte Jahresabrechnung.'
+    const pdf = await renderToBuffer(<VergleichDocument daten={d} absender={standardAbsender} />)
+    expect(seitenAnzahl(pdf)).toBe(3)
+  })
   it('rendert auch eine leere Vorlage ohne Fehler', async () => {
     const leer = leererVergleich('2026-09-10', 'AE-20260910-AAAA', standardAbsender.ansprechpartner)
     const pdf = await renderToBuffer(<VergleichDocument daten={leer} absender={standardAbsender} />)

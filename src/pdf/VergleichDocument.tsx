@@ -76,6 +76,15 @@ function lieferstelleEintraege(d: VergleichDaten, e: VergleichErgebnis): KeyValu
   ]
 }
 
+/** Kompakte Ein-Zeilen-Variante (drei Einträge) für Seite 3 – dort ist der Platz knapp, Seite 2 zeigt das volle Raster. */
+function lieferstelleEintraegeKompakt(d: VergleichDaten, e: VergleichErgebnis): KeyValue[] {
+  return [
+    { label: 'Lieferstelle', wert: `${lieferstelleText(d)} · ${energieartLabel[d.lieferstelle.energieart]}` },
+    { label: 'Jahresverbrauch', wert: kwh(parseDezimal(d.lieferstelle.jahresverbrauchKwh)) },
+    { label: 'Belieferung', wert: `${datum(d.lieferstelle.lieferbeginn)} – ${datum(e.lieferende)} · ${e.laufzeitMonate > 0 ? monate(e.laufzeitMonate) : LEER}` },
+  ]
+}
+
 function fussnotenBasis(e: VergleichErgebnis, p: Preisdarstellung): string[] {
   return [
     `* Alle Preise verstehen sich ${p === 'netto' ? 'netto zzgl.' : 'inkl.'} der gesetzlichen Umsatzsteuer (${prozent(e.ustSatz)}).`,
@@ -84,10 +93,19 @@ function fussnotenBasis(e: VergleichErgebnis, p: Preisdarstellung): string[] {
   ]
 }
 
+/** Seite 3: die zweite und dritte Basis-Fußnote zu einer Zeile zusammengefasst, um Platz zu sparen. */
+function fussnotenKompakt(e: VergleichErgebnis, p: Preisdarstellung): string[] {
+  const [preishinweis] = fussnotenBasis(e, p)
+  return [
+    preishinweis,
+    '** Gerundete Werte auf Basis des angegebenen Jahresverbrauchs; bei starken Verbrauchsschwankungen können die tatsächlichen Kosten deutlich abweichen. Alle Werte sind auf zwei Nachkommastellen gerundet.',
+  ]
+}
+
 function MetaZeile({ label, wert }: { label: string; wert: string }) {
   return (
     <View style={{ flexDirection: 'row', marginBottom: 2 }}>
-      <Text style={[styles.label, { width: 92, paddingTop: 1.5 }]}>{label}</Text>
+      <Text style={[styles.label, { width: 108, paddingRight: 8, paddingTop: 1.5 }]}>{label}</Text>
       <Text style={{ flex: 1, fontSize: GROESSE.klein }}>{wert}</Text>
     </View>
   )
@@ -173,14 +191,17 @@ export function VergleichDocument({ daten, absender }: Props) {
           <View style={{ width: '52%' }}>
             <Text style={[styles.fussnote, { marginBottom: 4 }]}>{`${absender.firma} · ${absender.strasse} · ${absender.plz} ${absender.ort}`}</Text>
             {adresszeilen(daten).map((zeile, i) => (
-              <Text key={i} style={{ lineHeight: 1.4 }}>{zeile}</Text>
+              <Text key={i} style={{ fontSize: GROESSE.text, lineHeight: 1.4 }}>{zeile}</Text>
             ))}
           </View>
           <View style={{ width: '42%' }}>
             <MetaZeile label="Vergleichsnummer" wert={nummer} />
             <MetaZeile label="Datum" wert={datum(daten.vergleich.datum)} />
             <MetaZeile label="Gültig bis" wert={datum(e.gueltigBis)} />
-            <MetaZeile label="Ansprechpartner" wert={`${absender.ansprechpartner.name} · ${absender.ansprechpartner.telefon} · ${absender.ansprechpartner.email}`} />
+            <MetaZeile label="Ansprechpartner" wert={absender.ansprechpartner.name} />
+            {/* Fester Zeilenumbruch vor dem Punkt: Die Werte-Spalte ist zu schmal für „Telefon · E-Mail“ in einer
+                Zeile. Ohne harten Umbruch bricht react-pdf hinter dem Punkt um und lässt ihn am Zeilenende hängen. */}
+            <MetaZeile label="Kontakt" wert={`${absender.ansprechpartner.telefon}\n· ${absender.ansprechpartner.email}`} />
           </View>
         </View>
 
@@ -230,9 +251,9 @@ export function VergleichDocument({ daten, absender }: Props) {
       </PageFrame>
 
       {/* Seite 3 – Details */}
-      <PageFrame absender={absender} laufzeile={laufzeile}>
+      <PageFrame absender={absender} laufzeile={laufzeile} dicht>
         <SectionTitle eyebrow={`Vergleichskonditionen vom ${datum(daten.vergleich.datum)} · gültig bis ${datum(e.gueltigBis)}`} titel="Konditionen im Detail" />
-        <KeyValueGrid spalten={3} eintraege={lieferstelleEintraege(daten, e)} />
+        <KeyValueGrid spalten={3} eintraege={lieferstelleEintraegeKompakt(daten, e)} />
 
         <Ueberschrift>Vertragsdetails – unsere Empfehlung</Ueberschrift>
         <Tabelle spalten={nettoBruttoSpalten} zeilen={vertragZeilen} />
@@ -262,7 +283,7 @@ export function VergleichDocument({ daten, absender }: Props) {
 
         <Fussnoten
           zeilen={[
-            ...fussnotenBasis(e, p),
+            ...fussnotenKompakt(e, p),
             'Dieses Angebot ist freibleibend. Grundlage sind die zum Vergleichsdatum gültigen Konditionen des Versorgers; Änderungen von Steuern, Abgaben und Umlagen bleiben vorbehalten.',
           ]}
         />

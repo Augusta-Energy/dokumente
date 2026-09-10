@@ -60,4 +60,22 @@ describe('PDF-Grundgerüst', () => {
     expect(roh).toMatch(/Montserrat/)
     expect(roh).toMatch(/Raleway/)
   })
+
+  it('rendert mehrere Seiten mit gemischter Dichte (normal + dicht) in den Markenschriften', async () => {
+    const pdf = await renderToBuffer(
+      <Document>
+        <PageFrame absender={standardAbsender} laufzeile="Energie-Vergleich Nr. AE-1 vom 10.09.2026 für Test">
+          <Absatz>Normale Seite.</Absatz>
+        </PageFrame>
+        <PageFrame absender={standardAbsender} laufzeile="Energie-Vergleich Nr. AE-1 vom 10.09.2026 für Test" dicht>
+          <Absatz>Dichte Seite.</Absatz>
+        </PageFrame>
+      </Document>,
+    )
+    expect(istPdf(pdf)).toBe(true)
+    expect(seitenAnzahl(pdf)).toBe(2)
+    const roh = Buffer.from(pdf).toString('latin1')
+    expect(roh).toMatch(/Montserrat/)
+    expect(roh).toMatch(/Raleway/)
+  })
 })

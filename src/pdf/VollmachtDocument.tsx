@@ -30,9 +30,9 @@ function Box({ titel, zeilen }: { titel: string; zeilen: string[] }) {
   )
 }
 
-function Liste({ punkte, nummeriert }: { punkte: readonly string[]; nummeriert: boolean }) {
+function Liste({ punkte, nummeriert, zusammenhalten = false }: { punkte: readonly string[]; nummeriert: boolean; zusammenhalten?: boolean }) {
   return (
-    <View style={{ marginBottom: 4 }}>
+    <View wrap={!zusammenhalten} style={{ marginBottom: 4 }}>
       {punkte.map((punkt, i) => (
         <View key={i} style={{ flexDirection: 'row', marginBottom: 2.5 }}>
           <Text style={{ width: 16, color: farben.goldDeep, fontWeight: 600 }}>{nummeriert ? `${i + 1}.` : '–'}</Text>
@@ -102,7 +102,7 @@ export function VollmachtDocument({ daten, absender }: Props) {
 
         <Ueberschrift>Beschränkung der Vollmacht</Ueberschrift>
         <Absatz abstand={3}>{beschraenkungEinleitung(daten)}</Absatz>
-        <Liste punkte={beschraenkungPunkte} nummeriert={false} />
+        <Liste punkte={beschraenkungPunkte} nummeriert={false} zusammenhalten />
 
         <Ueberschrift>Untervollmacht</Ueberschrift>
         <Absatz>{untervollmachtSatz(daten)}</Absatz>

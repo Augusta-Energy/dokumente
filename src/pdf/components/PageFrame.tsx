@@ -14,12 +14,13 @@ export function fusszeilen(a: Absender): string[] {
   return [zeile1, zeile2, zeile3].filter(Boolean)
 }
 
-type Props = { absender: Absender; laufzeile?: string; children: ReactNode }
+type Props = { absender: Absender; laufzeile?: string; dicht?: boolean; children: ReactNode }
 
-/** A4-Seite mit festem Kopf (Logo + Kontakt + Goldlinie) und Fuß (Firmenzeilen + „Seite x von y“). */
-export function PageFrame({ absender, laufzeile, children }: Props) {
+/** A4-Seite mit festem Kopf (Logo + Kontakt + Goldlinie) und Fuß (Firmenzeilen + „Seite x von y“).
+ *  `dicht`: dichtere Typografie/Kopfabstand für inhaltsreiche Seiten (siehe theme.ts `seiteDicht`/`inhaltDicht`). */
+export function PageFrame({ absender, laufzeile, dicht = false, children }: Props) {
   return (
-    <Page size="A4" style={styles.seite}>
+    <Page size="A4" style={dicht ? styles.seiteDicht : styles.seite}>
       <View fixed style={styles.kopf}>
         <LogoPdf hoehe={30} />
         <View style={styles.kopfKontakt}>
@@ -27,15 +28,17 @@ export function PageFrame({ absender, laufzeile, children }: Props) {
           <Text>{`Telefon ${absender.telefon} · ${absender.email} · ${absender.web}`}</Text>
         </View>
       </View>
-      {laufzeile ? <Text style={styles.laufzeile}>{laufzeile}</Text> : null}
-      {children}
+      <View style={dicht ? styles.inhaltDicht : styles.inhalt}>
+        {laufzeile ? <Text style={styles.laufzeile}>{laufzeile}</Text> : null}
+        {children}
+      </View>
       <View fixed style={styles.fuss}>
         <View>
           {fusszeilen(absender).map((zeile) => (
             <Text key={zeile} style={styles.fussText}>{zeile}</Text>
           ))}
         </View>
-        <Text style={styles.fussText} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
+        <Text style={styles.seitenzahl} render={({ pageNumber, totalPages }) => `Seite ${pageNumber} von ${totalPages}`} />
       </View>
     </Page>
   )
