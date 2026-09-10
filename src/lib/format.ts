@@ -6,30 +6,39 @@ const nf2 = new Intl.NumberFormat('de-DE', { minimumFractionDigits: 2, maximumFr
 const nf0 = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 })
 const nfProzent = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2 })
 
+/** Gemeinsame Schutzklausel aller Zahlen-Formatierer: kein `null`, kein NaN/Infinity. */
+function gueltigeZahl(n: number | null): n is number {
+  return n != null && Number.isFinite(n)
+}
+
+/** Intl liefert bei -0 ein führendes Minus („-0,00“); das vermeiden wir für alle Formatierer. */
+function ohneMinusNull(n: number): number {
+  return Object.is(n, -0) ? 0 : n
+}
+
 export function zahl2(n: number): string {
-  // Intl liefert bei -0 ein „-0,00“; das vermeiden wir.
-  return nf2.format(Object.is(n, -0) ? 0 : n)
+  return gueltigeZahl(n) ? nf2.format(ohneMinusNull(n)) : LEER
 }
 
 export function euro(betrag: number | null): string {
-  return betrag == null ? LEER : `${zahl2(betrag)} €`
+  return gueltigeZahl(betrag) ? `${zahl2(betrag)} €` : LEER
 }
 
 export function ctProKwh(ct: number | null): string {
-  return ct == null ? LEER : `${zahl2(ct)} ct/kWh`
+  return gueltigeZahl(ct) ? `${zahl2(ct)} ct/kWh` : LEER
 }
 
 export function kwh(menge: number | null): string {
-  return menge == null ? LEER : `${nf0.format(menge)} kWh`
+  return gueltigeZahl(menge) ? `${nf0.format(ohneMinusNull(menge))} kWh` : LEER
 }
 
 export function monate(n: number | null): string {
-  if (n == null) return LEER
-  return n === 1 ? '1 Monat' : `${nf0.format(n)} Monate`
+  if (!gueltigeZahl(n)) return LEER
+  return n === 1 ? '1 Monat' : `${nf0.format(ohneMinusNull(n))} Monate`
 }
 
 export function prozent(p: number | null): string {
-  return p == null ? LEER : `${nfProzent.format(p)} %`
+  return gueltigeZahl(p) ? `${nfProzent.format(ohneMinusNull(p))} %` : LEER
 }
 
 export function datum(iso: string | null | undefined): string {
@@ -42,6 +51,6 @@ export function datum(iso: string | null | undefined): string {
 }
 
 export function grundpreisText(betrag: number | null, einheit: 'monat' | 'jahr'): string {
-  if (betrag == null) return LEER
+  if (!gueltigeZahl(betrag)) return LEER
   return `${zahl2(betrag)} €/${einheit === 'monat' ? 'Monat' : 'Jahr'}`
 }

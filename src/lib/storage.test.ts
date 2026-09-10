@@ -29,4 +29,16 @@ describe('storage', () => {
     expect(lesen('x', 5, undefined)).toBe(5)
     expect(() => schreiben('x', 1, undefined)).not.toThrow()
   })
+  it('ignoriert falsch geformte gespeicherte Werte, wenn der Fallback ein Objekt ist', () => {
+    const fallback = { a: 1 }
+    const alsGespeichert = (wert: unknown) => {
+      const s = fakeStorage()
+      s.setItem('x', JSON.stringify(wert))
+      return lesen('x', fallback, s)
+    }
+    expect(alsGespeichert('abc')).toEqual(fallback)
+    expect(alsGespeichert(5)).toEqual(fallback)
+    expect(alsGespeichert([1, 2])).toEqual(fallback)
+    expect(alsGespeichert(null)).toEqual(fallback)
+  })
 })

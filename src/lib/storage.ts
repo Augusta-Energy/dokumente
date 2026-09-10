@@ -17,7 +17,7 @@ export function lesen<T>(key: string, fallback: T, storage: Storage | undefined 
     const roh = storage?.getItem(key)
     if (roh == null) return fallback
     const wert = JSON.parse(roh) as unknown
-    if (istObjekt(fallback) && istObjekt(wert)) return { ...fallback, ...wert } as T
+    if (istObjekt(fallback)) return istObjekt(wert) ? ({ ...fallback, ...wert } as T) : fallback
     return wert as T
   } catch {
     return fallback
