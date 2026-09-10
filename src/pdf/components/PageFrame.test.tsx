@@ -3,6 +3,7 @@ import { Document, renderToBuffer } from '@react-pdf/renderer'
 import { registerFonts } from '../../brand/fonts.node'
 import { standardAbsender } from '../../lib/absender'
 import { istPdf, seitenAnzahl } from '../testUtils'
+import { styles } from '../theme'
 import { HighlightBlock } from './HighlightBlock'
 import { KeyValueGrid } from './KeyValueGrid'
 import { fusszeilen, PageFrame } from './PageFrame'
@@ -10,6 +11,11 @@ import { Tabelle } from './Tabelle'
 import { Absatz, ColonLead, Fussnoten, SectionTitle, Ueberschrift } from './Typo'
 
 beforeAll(() => registerFonts())
+
+// `StyleSheet.create` infers each Style-Objekt literal, ohne `lineHeight` im Typ, wenn es – wie hier
+// absichtlich – nie gesetzt wird. Der Cast ändert daran nichts zur Laufzeit (StyleSheet.create liefert
+// ein einfaches Objekt zurück), macht den Zugriff aber typsicher.
+const lineHeightVon = (style: object): number | undefined => (style as unknown as { lineHeight?: number }).lineHeight
 
 describe('PDF-Grundgerüst', () => {
   it('bildet die Fußzeilen abhängig von optionalen Angaben', () => {
@@ -30,6 +36,13 @@ describe('PDF-Grundgerüst', () => {
       'Augusta Energy · Inhaber: Niklas Trojovsky · Am Mittleren Moos 53 · 86167 Augsburg',
       'Telefon 0151 41378008 · info@augusta-energy.de · augusta-energy.de',
     ])
+  })
+
+  it('Seitenstile tragen keine lineHeight (Seitenzahl-Regression)', () => {
+    // Invariante siehe Kommentar bei `inhalt`/`seitenzahl` in theme.ts.
+    expect(lineHeightVon(styles.seite)).toBeUndefined()
+    expect(lineHeightVon(styles.seiteDicht)).toBeUndefined()
+    expect(lineHeightVon(styles.seitenzahl)).toBeUndefined()
   })
 
   it('rendert eine Seite mit Kopf, Fuß, Tabelle und Highlight in den Markenschriften', async () => {

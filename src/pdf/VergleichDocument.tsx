@@ -78,28 +78,36 @@ function lieferstelleEintraege(d: VergleichDaten, e: VergleichErgebnis): KeyValu
 
 /** Kompakte Ein-Zeilen-Variante (drei Einträge) für Seite 3 – dort ist der Platz knapp, Seite 2 zeigt das volle Raster. */
 function lieferstelleEintraegeKompakt(d: VergleichDaten, e: VergleichErgebnis): KeyValue[] {
+  // Adresse und Energieart auf zwei Zeilen statt „·“-Trennung: ein „·“ direkt vor einem Zeilenumbruch
+  // bliebe sonst als hängender Punkt am Zeilenende stehen (react-pdf respektiert „\n“ in Text).
+  const lieferstelle = `${lieferstelleText(d)}\n${energieartLabel[d.lieferstelle.energieart]}`
+  const zeitraum = d.lieferstelle.lieferbeginn && e.lieferende ? `${datum(d.lieferstelle.lieferbeginn)} – ${datum(e.lieferende)}` : LEER
+  const belieferung = e.laufzeitMonate > 0 ? `${zeitraum} · ${monate(e.laufzeitMonate)}` : zeitraum
   return [
-    { label: 'Lieferstelle', wert: `${lieferstelleText(d)} · ${energieartLabel[d.lieferstelle.energieart]}` },
+    { label: 'Lieferstelle', wert: lieferstelle },
     { label: 'Jahresverbrauch', wert: kwh(parseDezimal(d.lieferstelle.jahresverbrauchKwh)) },
-    { label: 'Belieferung', wert: `${datum(d.lieferstelle.lieferbeginn)} – ${datum(e.lieferende)} · ${e.laufzeitMonate > 0 ? monate(e.laufzeitMonate) : LEER}` },
+    { label: 'Belieferung', wert: belieferung },
   ]
 }
 
+// Bausteine der Basis-Fußnoten: Seite 2 zeigt sie als drei eigenständige Sätze (`fussnotenBasis`), die
+// kompakte Variante auf Seite 3 (`fussnotenKompakt`) hängt Rundungs- und Schwankungshinweis zu einer Zeile
+// zusammen. Der Wortlaut lebt hier einmal, damit beide Varianten nicht auseinanderlaufen.
+const FUSSNOTE_GERUNDET = 'Gerundete Werte auf Basis des angegebenen Jahresverbrauchs'
+const FUSSNOTE_SCHWANKUNG = 'starken Verbrauchsschwankungen können die tatsächlichen Kosten deutlich abweichen.'
+const FUSSNOTE_NACHKOMMA = 'Alle Werte sind auf zwei Nachkommastellen gerundet.'
+
+function fussnoteUst(p: Preisdarstellung, ustSatz: number): string {
+  return `* Alle Preise verstehen sich ${p === 'netto' ? 'netto zzgl.' : 'inkl.'} der gesetzlichen Umsatzsteuer (${prozent(ustSatz)}).`
+}
+
 function fussnotenBasis(e: VergleichErgebnis, p: Preisdarstellung): string[] {
-  return [
-    `* Alle Preise verstehen sich ${p === 'netto' ? 'netto zzgl.' : 'inkl.'} der gesetzlichen Umsatzsteuer (${prozent(e.ustSatz)}).`,
-    '** Gerundete Werte auf Basis des angegebenen Jahresverbrauchs. Bei starken Verbrauchsschwankungen können die tatsächlichen Kosten deutlich abweichen.',
-    'Alle Werte sind auf zwei Nachkommastellen gerundet.',
-  ]
+  return [fussnoteUst(p, e.ustSatz), `** ${FUSSNOTE_GERUNDET}. Bei ${FUSSNOTE_SCHWANKUNG}`, FUSSNOTE_NACHKOMMA]
 }
 
 /** Seite 3: die zweite und dritte Basis-Fußnote zu einer Zeile zusammengefasst, um Platz zu sparen. */
 function fussnotenKompakt(e: VergleichErgebnis, p: Preisdarstellung): string[] {
-  const [preishinweis] = fussnotenBasis(e, p)
-  return [
-    preishinweis,
-    '** Gerundete Werte auf Basis des angegebenen Jahresverbrauchs; bei starken Verbrauchsschwankungen können die tatsächlichen Kosten deutlich abweichen. Alle Werte sind auf zwei Nachkommastellen gerundet.',
-  ]
+  return [fussnoteUst(p, e.ustSatz), `** ${FUSSNOTE_GERUNDET}; bei ${FUSSNOTE_SCHWANKUNG} ${FUSSNOTE_NACHKOMMA}`]
 }
 
 function MetaZeile({ label, wert }: { label: string; wert: string }) {
@@ -199,9 +207,9 @@ export function VergleichDocument({ daten, absender }: Props) {
             <MetaZeile label="Datum" wert={datum(daten.vergleich.datum)} />
             <MetaZeile label="Gültig bis" wert={datum(e.gueltigBis)} />
             <MetaZeile label="Ansprechpartner" wert={absender.ansprechpartner.name} />
-            {/* Fester Zeilenumbruch vor dem Punkt: Die Werte-Spalte ist zu schmal für „Telefon · E-Mail“ in einer
-                Zeile. Ohne harten Umbruch bricht react-pdf hinter dem Punkt um und lässt ihn am Zeilenende hängen. */}
-            <MetaZeile label="Kontakt" wert={`${absender.ansprechpartner.telefon}\n· ${absender.ansprechpartner.email}`} />
+            {/* Fester Zeilenumbruch statt „·“-Trenner: Die Werte-Spalte ist zu schmal für „Telefon · E-Mail“ in
+                einer Zeile, und ein Trenner am Zeilenanfang bliebe als hängender Punkt stehen. */}
+            <MetaZeile label="Kontakt" wert={`${absender.ansprechpartner.telefon}\n${absender.ansprechpartner.email}`} />
           </View>
         </View>
 

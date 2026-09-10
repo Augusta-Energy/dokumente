@@ -100,9 +100,11 @@ export function VollmachtDocument({ daten, absender }: Props) {
         <Absatz abstand={3}>Die Vollmacht umfasst insbesondere:</Absatz>
         <Liste punkte={umfangPunkte(daten)} nummeriert />
 
-        <Ueberschrift>Beschränkung der Vollmacht</Ueberschrift>
-        <Absatz abstand={3}>{beschraenkungEinleitung(daten)}</Absatz>
-        <Liste punkte={beschraenkungPunkte} nummeriert={false} zusammenhalten />
+        <View wrap={false}>
+          <Ueberschrift>Beschränkung der Vollmacht</Ueberschrift>
+          <Absatz abstand={3}>{beschraenkungEinleitung(daten)}</Absatz>
+          <Liste punkte={beschraenkungPunkte} nummeriert={false} />
+        </View>
 
         <Ueberschrift>Untervollmacht</Ueberschrift>
         <Absatz>{untervollmachtSatz(daten)}</Absatz>

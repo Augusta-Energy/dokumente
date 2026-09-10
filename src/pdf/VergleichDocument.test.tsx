@@ -37,6 +37,12 @@ describe('VergleichDocument', () => {
     const pdf = await renderToBuffer(<VergleichDocument daten={leer} absender={standardAbsender} />)
     expect(seitenAnzahl(pdf)).toBe(3)
   })
+  it('bleibt bei fehlendem Lieferbeginn (Belieferungs-Zeitraum unbestimmbar) bei drei Seiten', async () => {
+    const d = beispielVergleich('2026-09-10')
+    d.lieferstelle.lieferbeginn = ''
+    const pdf = await renderToBuffer(<VergleichDocument daten={d} absender={standardAbsender} />)
+    expect(seitenAnzahl(pdf)).toBe(3)
+  })
   it('bildet den Dateinamen aus Kundenname und Datum', () => {
     expect(vergleichDateiname(beispielVergleich('2026-09-10'))).toBe('Augusta-Energy_Energie-Vergleich_Muster-Gastronomie-GmbH_2026-09-10.pdf')
   })
