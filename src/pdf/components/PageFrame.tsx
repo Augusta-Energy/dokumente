@@ -10,8 +10,7 @@ export function fusszeilen(a: Absender): string[] {
   const zeile2 = [`Telefon ${a.telefon}`, a.email, a.web, a.ustIdNr.trim() ? `USt-IdNr. ${a.ustIdNr.trim()}` : '']
     .filter(Boolean)
     .join(' · ')
-  const bank = [a.bank.trim(), a.iban.trim() ? `IBAN ${a.iban.trim()}` : ''].filter(Boolean).join(' · ')
-  const zeile3 = bank ? `Bankverbindung: ${bank}` : ''
+  const zeile3 = a.iban.trim() ? `Bankverbindung: ${[a.bank.trim(), `IBAN ${a.iban.trim()}`].filter(Boolean).join(' · ')}` : ''
   return [zeile1, zeile2, zeile3].filter(Boolean)
 }
 

@@ -17,7 +17,6 @@ let registriert = false
  *  react-pdf kennt nur englische Trennregeln, die deutsche Wörter falsch trennen würden. */
 export function registriereSchriften(q: SchriftQuellen): void {
   if (registriert) return
-  registriert = true
   Font.register({
     family: SCHRIFT.display,
     fonts: [
@@ -35,4 +34,5 @@ export function registriereSchriften(q: SchriftQuellen): void {
     ],
   })
   Font.registerHyphenationCallback((wort) => [wort])
+  registriert = true
 }

@@ -37,8 +37,8 @@ export function ColonLead({ lead, text }: { lead: string; text: string }) {
 export function Fussnoten({ zeilen }: { zeilen: string[] }) {
   return (
     <View style={{ marginTop: 14 }}>
-      {zeilen.map((zeile) => (
-        <Text key={zeile} style={styles.fussnote}>{zeile}</Text>
+      {zeilen.map((zeile, i) => (
+        <Text key={i} style={styles.fussnote}>{zeile}</Text>
       ))}
     </View>
   )

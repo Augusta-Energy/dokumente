@@ -22,6 +22,14 @@ describe('PDF-Grundgerüst', () => {
       'Telefon 0151 41378008 · info@augusta-energy.de · augusta-energy.de · USt-IdNr. DE123456789',
       'Bankverbindung: Musterbank · IBAN DE00 1234',
     ])
+    expect(fusszeilen({ ...standardAbsender, bank: 'Musterbank', iban: '' })).toEqual([
+      'Augusta Energy · Inhaber: Niklas Trojovsky · Am Mittleren Moos 53 · 86167 Augsburg',
+      'Telefon 0151 41378008 · info@augusta-energy.de · augusta-energy.de',
+    ])
+    expect(fusszeilen({ ...standardAbsender, bank: 'Musterbank', iban: '   ' })).toEqual([
+      'Augusta Energy · Inhaber: Niklas Trojovsky · Am Mittleren Moos 53 · 86167 Augsburg',
+      'Telefon 0151 41378008 · info@augusta-energy.de · augusta-energy.de',
+    ])
   })
 
   it('rendert eine Seite mit Kopf, Fuß, Tabelle und Highlight in den Markenschriften', async () => {
