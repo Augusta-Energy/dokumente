@@ -9,14 +9,14 @@ export type TabellenZeile = { zellen: string[]; fett?: boolean; span?: boolean }
 export function Tabelle({ spalten, zeilen }: { spalten: TabellenSpalte[]; zeilen: TabellenZeile[] }) {
   const restFlex = spalten.slice(1).reduce((summe, s) => summe + (s.flex ?? 1), 0)
   return (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 7 }}>
       <View style={{ flexDirection: 'row', backgroundColor: farben.cream }}>
         {spalten.map((s, i) => (
           <View
             key={i}
             style={{
               flex: s.flex ?? 1,
-              paddingVertical: 5,
+              paddingVertical: 3,
               paddingHorizontal: 6,
               borderTopWidth: s.hervorgehoben ? 2 : 0,
               borderTopColor: farben.gold,
@@ -45,7 +45,7 @@ export function Tabelle({ spalten, zeilen }: { spalten: TabellenSpalte[]; zeilen
               const flex = z.span && i === 1 ? restFlex : (spalte?.flex ?? 1)
               const hervorgehoben = !z.span && spalte?.hervorgehoben
               return (
-                <View key={i} style={{ flex, paddingVertical: 5, paddingHorizontal: 6, backgroundColor: hervorgehoben ? farben.goldTint : undefined }}>
+                <View key={i} style={{ flex, paddingVertical: 3, paddingHorizontal: 6, backgroundColor: hervorgehoben ? farben.goldTint : undefined }}>
                   <Text style={{ textAlign: z.span && i === 1 ? 'left' : (spalte?.align ?? 'left'), fontWeight: z.fett ? 600 : 400 }}>{zelle}</Text>
                 </View>
               )

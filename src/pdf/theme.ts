@@ -3,8 +3,8 @@ import { farben } from '../brand/colors'
 import { SCHRIFT } from '../brand/fonts'
 
 /** A4 = 595,28 × 841,89 pt. Ränder in pt. */
-export const SEITE = { randOben: 104, randUnten: 76, randSeite: 48 } as const
-export const GROESSE = { titel: 19, eyebrow: 7, label: 6.5, ueberschrift: 10, text: 9.2, klein: 7.8, fussnote: 7 } as const
+export const SEITE = { randOben: 85, randUnten: 76, randSeite: 48 } as const
+export const GROESSE = { titel: 19, eyebrow: 7, label: 6.5, ueberschrift: 10, text: 9, klein: 7.8, fussnote: 7 } as const
 
 export const styles = StyleSheet.create({
   seite: {
@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SEITE.randSeite,
     fontFamily: SCHRIFT.text,
     fontSize: GROESSE.text,
-    lineHeight: 1.45,
+    lineHeight: 1.3,
     color: farben.ink,
   },
   kopf: {
@@ -67,9 +67,9 @@ export const styles = StyleSheet.create({
     textTransform: 'uppercase',
     lineHeight: 1.12,
     color: farben.ink,
-    marginTop: 5,
+    marginTop: 3,
   },
-  goldRule: { width: 40, height: 1, backgroundColor: farben.gold, marginTop: 8, marginBottom: 12 },
+  goldRule: { width: 40, height: 1, backgroundColor: farben.gold, marginTop: 6, marginBottom: 8 },
   ueberschrift: {
     fontFamily: SCHRIFT.display,
     fontSize: GROESSE.ueberschrift,
@@ -77,8 +77,8 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     color: farben.ink,
-    marginTop: 12,
-    marginBottom: 5,
+    marginTop: 6,
+    marginBottom: 3,
   },
   absatz: { marginBottom: 6 },
   klein: { fontSize: GROESSE.klein, color: farben.ink600 },
