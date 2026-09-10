@@ -13,7 +13,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "render:beispiele": "tsx scripts/render-beispiele.tsx"
+    "render:beispiele": "tsx --tsconfig tsconfig.app.json scripts/render-beispiele.tsx"
   },
   "dependencies": {
     "@fontsource/montserrat": "^5.3.0",
