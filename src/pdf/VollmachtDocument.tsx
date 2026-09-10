@@ -24,7 +24,7 @@ function Box({ titel, zeilen }: { titel: string; zeilen: string[] }) {
     <View style={{ flex: 1, backgroundColor: farben.cream, padding: 10 }}>
       <Text style={[styles.label, { marginBottom: 4 }]}>{titel}</Text>
       {zeilen.map((z, i) => (
-        <Text key={i} style={{ lineHeight: 1.4, fontWeight: i === 0 ? 600 : 400 }}>{z}</Text>
+        <Text key={i} style={{ fontSize: GROESSE.text, lineHeight: 1.4, fontWeight: i === 0 ? 600 : 400 }}>{z}</Text>
       ))}
     </View>
   )
@@ -51,7 +51,8 @@ export function VollmachtDocument({ daten, absender }: Props) {
     vg.strasse.trim(),
     `${vg.plz} ${vg.ort}`.trim(),
     vg.typ === 'privat' && vg.geburtsdatum.trim() ? `geb. am ${datum(vg.geburtsdatum)}` : '',
-    [vg.email.trim(), vg.telefon.trim()].filter(Boolean).join(' · '),
+    vg.email.trim(),
+    vg.telefon.trim(),
   ].filter(Boolean)
 
   const bevollmaechtigteZeilen = [
@@ -66,7 +67,9 @@ export function VollmachtDocument({ daten, absender }: Props) {
     zellen: [`${i + 1}`, oder(l.adresse), lieferstellenEnergieartLabel[l.energieart], oder(l.zaehlernummer), oder(l.maloId), oder(l.versorger)],
   }))
 
-  const ortDatum = `${daten.unterschrift.ort.trim() || vg.ort.trim()}${daten.unterschrift.datum.trim() ? `, ${datum(daten.unterschrift.datum)}` : ', '}`
+  const ort = daten.unterschrift.ort.trim() || vg.ort.trim()
+  const tag = daten.unterschrift.datum.trim() ? datum(daten.unterschrift.datum) : ''
+  const ortDatum = ort ? (tag ? `${ort}, ${tag}` : `${ort}, `) : tag
 
   return (
     <Document title={`Vollmacht ${vollmachtgeberName(daten)}`.trim()} author={absender.firma} subject="Vollmacht Energieversorgung" language="de" creator="Augusta Energy Dokumente" producer="Augusta Energy Dokumente">
@@ -84,11 +87,11 @@ export function VollmachtDocument({ daten, absender }: Props) {
         <Tabelle
           spalten={[
             { label: 'Nr.', flex: 0.35 },
-            { label: 'Adresse', flex: 2.2 },
-            { label: 'Energieart', flex: 1 },
-            { label: 'Zählernummer', flex: 1.2 },
-            { label: 'Marktlokations-ID', flex: 1.2 },
-            { label: 'Bisheriger Versorger', flex: 1.3 },
+            { label: 'Adresse', flex: 1.9 },
+            { label: 'Energieart', flex: 1.2 },
+            { label: 'Zählernummer', flex: 1.5 },
+            { label: 'MaLo-ID', flex: 1.2 },
+            { label: 'Bisheriger Versorger', flex: 1.25 },
           ]}
           zeilen={lieferstellenZeilen.length ? lieferstellenZeilen : [{ zellen: ['1', LEER, LEER, LEER, LEER, LEER] }]}
         />

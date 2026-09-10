@@ -35,4 +35,15 @@ describe('VollmachtDocument', () => {
     d.unterschrift.datum = '2026-09-10'
     expect(vollmachtDateiname(d)).toBe('Augusta-Energy_Vollmacht_Muster-Gastronomie-GmbH_2026-09-10.pdf')
   })
+  it('rendert auch ohne Lieferstellen, ohne zu brechen', async () => {
+    const d = beispielVollmacht()
+    d.lieferstellen = []
+    const pdf = await renderToBuffer(<VollmachtDocument daten={d} absender={standardAbsender} />)
+    expect(seitenAnzahl(pdf)).toBeGreaterThanOrEqual(1)
+  })
+  it('nutzt das heutige Datum im Dateinamen, wenn kein Unterschriftsdatum gesetzt ist', () => {
+    const d = beispielVollmacht()
+    d.unterschrift.datum = ''
+    expect(vollmachtDateiname(d)).toMatch(/^Augusta-Energy_Vollmacht_Muster-Gastronomie-GmbH_\d{4}-\d{2}-\d{2}\.pdf$/)
+  })
 })
