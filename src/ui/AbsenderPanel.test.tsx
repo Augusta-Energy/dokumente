@@ -16,11 +16,15 @@ describe('AbsenderPanel', () => {
       <AbsenderPanel offen={true} absender={standardAbsender} setAbsender={() => {}} onReset={() => {}} onClose={() => {}} />,
     )
     expect(html).toContain('role="dialog"')
+    expect(html).toContain('tabindex="-1"')
 
     const firmaInput = html.match(/<input[^>]*id="ab-firma"[^>]*>/)?.[0] ?? ''
     expect(firmaInput).toContain('value="Augusta Energy"')
 
     expect(html).toContain('Zurücksetzen auf Standard')
+
+    const legend = html.match(/<legend[^>]*>[^<]*<\/legend>/)?.[0] ?? ''
+    expect(legend).toContain('Ansprechpartner')
 
     // React escapt "&" als "&amp;" in der statischen Auszeichnung (renderToStaticMarkup).
     const optionen = html.split('</option>')

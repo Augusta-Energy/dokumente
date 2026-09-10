@@ -36,9 +36,11 @@ export const standardAbsender: Absender = {
   },
 }
 
-/** Schnellauswahl für Ansprechpartner/Unterzeichner. */
-export const teamAuswahl: ReadonlyArray<{ name: string; rolle: string }> = [
-  { name: 'Niklas Trojovsky', rolle: 'Inhaber & Vertriebsleitung' },
-  { name: 'Gabriel Stefa', rolle: 'Strom & Gas Experte' },
-  { name: 'Patrick Seebach', rolle: 'Beratung & Projektleitung' },
+/** Schnellauswahl für Ansprechpartner/Unterzeichner.
+ *  Telefon/E-Mail sind die allgemeinen Firmenkontaktdaten – persönliche Durchwahlen der
+ *  einzelnen Teammitglieder sind nicht bekannt. */
+export const teamAuswahl: ReadonlyArray<Ansprechpartner> = [
+  { name: 'Niklas Trojovsky', rolle: 'Inhaber & Vertriebsleitung', telefon: '0151 41378008', email: 'info@augusta-energy.de' },
+  { name: 'Gabriel Stefa', rolle: 'Strom & Gas Experte', telefon: '0151 41378008', email: 'info@augusta-energy.de' },
+  { name: 'Patrick Seebach', rolle: 'Beratung & Projektleitung', telefon: '0151 41378008', email: 'info@augusta-energy.de' },
 ]

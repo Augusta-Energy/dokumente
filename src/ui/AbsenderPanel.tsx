@@ -1,4 +1,4 @@
-import { useEffect, type Dispatch, type SetStateAction } from 'react'
+import { useEffect, useRef, type Dispatch, type SetStateAction } from 'react'
 import { teamAuswahl, type Absender } from '../lib/absender'
 import { Button } from './components/Button'
 import { Field } from './components/Field'
@@ -16,6 +16,9 @@ const EIGENE = '__eigene__'
 
 /** Seitlicher Dialog mit den Firmen- und Ansprechpartnerdaten, die in beide Dokumente laufen. */
 export function AbsenderPanel({ offen, absender, setAbsender, onReset, onClose }: Props) {
+  const panelRef = useRef<HTMLDivElement>(null)
+  const vorherigerFokus = useRef<HTMLElement | null>(null)
+
   useEffect(() => {
     if (!offen) return
     const onKey = (e: KeyboardEvent) => {
@@ -25,6 +28,16 @@ export function AbsenderPanel({ offen, absender, setAbsender, onReset, onClose }
     return () => window.removeEventListener('keydown', onKey)
   }, [offen, onClose])
 
+  useEffect(() => {
+    if (!offen) return
+    vorherigerFokus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    panelRef.current?.focus()
+    return () => {
+      const el = vorherigerFokus.current
+      if (el && document.contains(el)) el.focus()
+    }
+  }, [offen])
+
   if (!offen) return null
 
   const feld = (key: keyof Omit<Absender, 'ansprechpartner'>) => (wert: string) => setAbsender((a) => ({ ...a, [key]: wert }))
@@ -32,8 +45,15 @@ export function AbsenderPanel({ offen, absender, setAbsender, onReset, onClose }
   const treffer = teamAuswahl.find((t) => t.name === absender.ansprechpartner.name && t.rolle === absender.ansprechpartner.rolle)
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-ink/50" onClick={onClose}>
-      <div role="dialog" aria-modal="true" aria-labelledby="absender-titel" className="h-full w-full max-w-lg overflow-y-auto bg-paper p-6 shadow-2xl md:p-8" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex justify-end bg-ink/50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="absender-titel"
+        tabIndex={-1}
+        className="h-full w-full max-w-lg overflow-y-auto bg-paper p-6 shadow-2xl outline-none md:p-8"
+      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="eyebrow text-gold-deep">Einstellungen</p>
@@ -58,22 +78,25 @@ export function AbsenderPanel({ offen, absender, setAbsender, onReset, onClose }
           <Field label="Bank (optional)" htmlFor="ab-bank"><TextInput id="ab-bank" value={absender.bank} onChange={feld('bank')} /></Field>
           <Field label="IBAN (optional)" htmlFor="ab-iban"><TextInput id="ab-iban" value={absender.iban} onChange={feld('iban')} /></Field>
 
-          <p className="eyebrow mt-4 text-gold-deep">Ansprechpartner</p>
-          <Field label="Auswahl" htmlFor="ab-ap-auswahl">
-            <Select
-              id="ab-ap-auswahl"
-              value={treffer ? treffer.name : EIGENE}
-              onChange={(wert) => {
-                const t = teamAuswahl.find((x) => x.name === wert)
-                if (t) ap({ name: t.name, rolle: t.rolle })
-              }}
-              optionen={[...teamAuswahl.map((t) => ({ wert: t.name, label: `${t.name} – ${t.rolle}` })), { wert: EIGENE, label: 'Eigene Angabe' }]}
-            />
-          </Field>
-          <Field label="Name" htmlFor="ab-ap-name"><TextInput id="ab-ap-name" value={absender.ansprechpartner.name} onChange={(name) => ap({ name })} /></Field>
-          <Field label="Rolle" htmlFor="ab-ap-rolle"><TextInput id="ab-ap-rolle" value={absender.ansprechpartner.rolle} onChange={(rolle) => ap({ rolle })} /></Field>
-          <Field label="Telefon" htmlFor="ab-ap-telefon"><TextInput id="ab-ap-telefon" type="tel" value={absender.ansprechpartner.telefon} onChange={(telefon) => ap({ telefon })} /></Field>
-          <Field label="E-Mail" htmlFor="ab-ap-email"><TextInput id="ab-ap-email" type="email" value={absender.ansprechpartner.email} onChange={(email) => ap({ email })} /></Field>
+          <fieldset className="contents">
+            <legend className="eyebrow mt-4 text-gold-deep">Ansprechpartner</legend>
+            <Field label="Auswahl" htmlFor="ab-ap-auswahl">
+              <Select
+                id="ab-ap-auswahl"
+                value={treffer ? treffer.name : EIGENE}
+                onChange={(wert) => {
+                  const t = teamAuswahl.find((x) => x.name === wert)
+                  if (t) ap({ name: t.name, rolle: t.rolle, telefon: t.telefon, email: t.email })
+                  else ap({ name: '', rolle: '' })
+                }}
+                optionen={[...teamAuswahl.map((t) => ({ wert: t.name, label: `${t.name} – ${t.rolle}` })), { wert: EIGENE, label: 'Eigene Angabe' }]}
+              />
+            </Field>
+            <Field label="Name" htmlFor="ab-ap-name"><TextInput id="ab-ap-name" value={absender.ansprechpartner.name} onChange={(name) => ap({ name })} /></Field>
+            <Field label="Rolle" htmlFor="ab-ap-rolle"><TextInput id="ab-ap-rolle" value={absender.ansprechpartner.rolle} onChange={(rolle) => ap({ rolle })} /></Field>
+            <Field label="Telefon" htmlFor="ab-ap-telefon"><TextInput id="ab-ap-telefon" type="tel" value={absender.ansprechpartner.telefon} onChange={(telefon) => ap({ telefon })} /></Field>
+            <Field label="E-Mail" htmlFor="ab-ap-email"><TextInput id="ab-ap-email" type="email" value={absender.ansprechpartner.email} onChange={(email) => ap({ email })} /></Field>
+          </fieldset>
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">

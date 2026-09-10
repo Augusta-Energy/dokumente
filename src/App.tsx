@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Logo } from './brand/Logo'
 import { standardAbsender, type Absender } from './lib/absender'
 import { useLocalStorageState } from './lib/storage'
@@ -19,14 +19,15 @@ export function App() {
   const [tab, setTab] = useLocalStorageState<Tab>('augusta-dokumente:v1:tab', 'vergleich')
   const [absender, setAbsender, absenderZuruecksetzen] = useLocalStorageState<Absender>('augusta-dokumente:v1:absender', standardAbsender)
   const [absenderOffen, setAbsenderOffen] = useState(false)
-  const aktiverTab = TABS.find((t) => t.wert === tab)!
+  const aktiverTab = TABS.find((t) => t.wert === tab) ?? TABS[0]
+  const onAbsenderSchliessen = useCallback(() => setAbsenderOffen(false), [])
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-6 md:px-8">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
         <div className="flex items-center gap-4">
           <Logo className="h-9 w-auto md:h-10" />
-          <span className="eyebrow border-l border-line pl-4 text-gold-deep">Dokumente</span>
+          <h1 className="eyebrow border-l border-line pl-4 text-gold-deep">Dokumente</h1>
         </div>
         <Button klein onClick={() => setAbsenderOffen(true)}>Absender</Button>
       </header>
@@ -45,7 +46,7 @@ export function App() {
         Interne Anwendung von {absender.firma}. Eingaben bleiben im Browser – nichts wird an einen Server gesendet.
       </footer>
 
-      <AbsenderPanel offen={absenderOffen} absender={absender} setAbsender={setAbsender} onReset={absenderZuruecksetzen} onClose={() => setAbsenderOffen(false)} />
+      <AbsenderPanel offen={absenderOffen} absender={absender} setAbsender={setAbsender} onReset={absenderZuruecksetzen} onClose={onAbsenderSchliessen} />
     </div>
   )
 }

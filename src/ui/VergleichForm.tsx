@@ -128,18 +128,18 @@ export function VergleichForm({ daten, setDaten, ergebnis }: Props) {
       </Section>
 
       <Section titel="Unterzeichner">
-        <Field label="Auswahl" htmlFor="v-unterzeichner-auswahl">
+        <Field label="Auswahl" htmlFor="v-unterzeichner-auswahl" breit>
           <Select
             id="v-unterzeichner-auswahl"
             value={unterzeichnerAuswahl}
             onChange={(wert) => {
               const t = teamAuswahl.find((x) => x.name === wert)
               if (t) unterzeichner({ name: t.name, rolle: t.rolle })
+              else unterzeichner({ name: '', rolle: '' })
             }}
             optionen={[...teamAuswahl.map((t) => ({ wert: t.name, label: `${t.name} – ${t.rolle}` })), { wert: EIGENE, label: 'Eigene Angabe' }]}
           />
         </Field>
-        <div />
         <Field label="Name" htmlFor="v-unterzeichner-name"><TextInput id="v-unterzeichner-name" value={daten.unterzeichner.name} onChange={(name) => unterzeichner({ name })} /></Field>
         <Field label="Rolle" htmlFor="v-unterzeichner-rolle"><TextInput id="v-unterzeichner-rolle" value={daten.unterzeichner.rolle} onChange={(rolle) => unterzeichner({ rolle })} /></Field>
       </Section>
