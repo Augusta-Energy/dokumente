@@ -1,13 +1,19 @@
-import { useCallback, useState } from 'react'
+import { lazy, Suspense, useCallback, useState } from 'react'
 import { Logo } from './brand/Logo'
 import { standardAbsender, type Absender } from './lib/absender'
 import { useLocalStorageState } from './lib/storage'
 import { AbsenderPanel } from './ui/AbsenderPanel'
 import { Button } from './ui/components/Button'
+import { Fehlergrenze } from './ui/components/Fehlergrenze'
 import { Tabs } from './ui/components/Tabs'
-import { VergleichWorkspace } from './ui/VergleichWorkspace'
-import { VisitenkartenWorkspace } from './ui/visitenkarten/VisitenkartenWorkspace'
-import { VollmachtWorkspace } from './ui/VollmachtWorkspace'
+import { VergleichWorkspace, VERGLEICH_KEY } from './ui/VergleichWorkspace'
+import { VollmachtWorkspace, VOLLMACHT_KEY } from './ui/VollmachtWorkspace'
+
+// Eigener Chunk: die Render-Engine (QR, Canvas-Textmessung, Export nach SVG/PNG/PDF) wiegt spürbar,
+// wird aber nur gebraucht, wenn der Reiter „Visitenkarten“ tatsächlich geöffnet wird.
+const VisitenkartenWorkspace = lazy(() =>
+  import('./ui/visitenkarten/VisitenkartenWorkspace').then((m) => ({ default: m.VisitenkartenWorkspace })),
+)
 
 type Tab = 'vergleich' | 'vollmacht' | 'visitenkarten'
 
@@ -16,6 +22,16 @@ const TABS: { wert: Tab; label: string; id: string; panelId: string }[] = [
   { wert: 'vollmacht', label: 'Vollmacht', id: 'tab-vollmacht', panelId: 'panel-vollmacht' },
   { wert: 'visitenkarten', label: 'Visitenkarten', id: 'tab-visitenkarten', panelId: 'panel-visitenkarten' },
 ]
+
+// Speicher-Keys je Reiter für die Fehlergrenze (setzt bei „Zurücksetzen“ nur die Eingaben des betroffenen
+// Reiters zurück). vergleich/vollmacht kommen als Re-Export der Workspaces – visitenkarten bewusst als
+// Literal (identisch zu VISITENKARTE_KEY dort): ein Import von dort würde das lazy-geladene Modul
+// oben wieder statisch einbinden und den eigenen Chunk zunichtemachen.
+const SPEICHER_KEYS: Record<Tab, string> = {
+  vergleich: VERGLEICH_KEY,
+  vollmacht: VOLLMACHT_KEY,
+  visitenkarten: 'augusta-dokumente:v1:visitenkarte',
+}
 
 export function App() {
   const [tab, setTab] = useLocalStorageState<Tab>('augusta-dokumente:v1:tab', 'vergleich')
@@ -37,12 +53,18 @@ export function App() {
       <main className="py-8">
         <p className="eyebrow text-muted">Dokument wählen</p>
         <div className="mt-3">
-          <Tabs wert={tab} onChange={setTab} tabs={TABS} />
+          <Tabs wert={aktiverTab.wert} onChange={setTab} tabs={TABS} />
         </div>
         <div className="mt-8" role="tabpanel" id={aktiverTab.panelId} aria-labelledby={aktiverTab.id}>
-          {tab === 'vergleich' ? <VergleichWorkspace absender={absender} /> : null}
-          {tab === 'vollmacht' ? <VollmachtWorkspace absender={absender} /> : null}
-          {tab === 'visitenkarten' ? <VisitenkartenWorkspace absender={absender} /> : null}
+          <Fehlergrenze key={aktiverTab.wert} speicherKey={SPEICHER_KEYS[aktiverTab.wert]}>
+            {aktiverTab.wert === 'vergleich' ? <VergleichWorkspace absender={absender} /> : null}
+            {aktiverTab.wert === 'vollmacht' ? <VollmachtWorkspace absender={absender} /> : null}
+            {aktiverTab.wert === 'visitenkarten' ? (
+              <Suspense fallback={<p className="text-sm text-muted">Visitenkarten werden geladen …</p>}>
+                <VisitenkartenWorkspace absender={absender} />
+              </Suspense>
+            ) : null}
+          </Fehlergrenze>
         </div>
       </main>
 

@@ -211,22 +211,24 @@ export class Zeichner {
     )
   }
 
-  /** QR-Code auf weißer Platte mit Ruhezone. */
-  qrPlatte(q: QrPfad, x: number, y: number, groesse: number, o: QrOpt = {}): string {
+  /** QR-Code auf weißer Platte mit Ruhezone; passt der Text nicht in einen QR-Code (q === null),
+   *  steht statt des Codes eine zentrierte Eyebrow-Meldung auf der Platte. */
+  qrPlatte(q: QrPfad | null, x: number, y: number, groesse: number, o: QrOpt = {}): string {
+    const platte = this.rect(x, y, groesse, groesse, '#ffffff', { rx: 0.6, stroke: o.stroke, sw: o.sw ?? 0.3 })
+    if (!q) {
+      return platte + this.text(x + groesse / 2, y + groesse / 2 + 0.6, 1.4, farben.ink, 'QR ZU LANG', { schrift: 'display', gewicht: 600, ls: 0.14, anker: 'middle' })
+    }
     // Bei sehr kleiner groesse darf die Ruhezone nicht so groß werden, dass die Modulgröße negativ wird.
     const ruhe = Math.min(o.ruhe ?? Math.max(1.6, groesse * 0.085), groesse / 4)
     const m = (groesse - 2 * ruhe) / q.n
-    return (
-      this.rect(x, y, groesse, groesse, '#ffffff', { rx: 0.6, stroke: o.stroke, sw: o.sw ?? 0.3 }) +
-      `<g transform="translate(${N(x + ruhe)} ${N(y + ruhe)}) scale(${N(m)})"><path d="${q.pfad}" fill="${farben.ink}"/></g>`
-    )
+    return platte + `<g transform="translate(${N(x + ruhe)} ${N(y + ruhe)}) scale(${N(m)})"><path d="${q.pfad}" fill="${farben.ink}"/></g>`
   }
 
-  vcardQr(): QrPfad {
+  vcardQr(): QrPfad | null {
     return qrPfad(vcardText(this.k, this.firma))
   }
 
-  linkQr(): QrPfad {
+  linkQr(): QrPfad | null {
     return qrPfad(this.k.qrLink.trim() || webUrl(this.k.web) || STANDARD_URL)
   }
 

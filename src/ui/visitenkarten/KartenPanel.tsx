@@ -75,11 +75,11 @@ export function KartenPanel({ zustand, hatFoto, fotoFehler, onPerson, onKarte, o
       <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {FELDER.map((f) => (
           <Field key={f.key} label={f.label} htmlFor={`${id}-${f.key}`} hinweis={f.hinweis}>
-            <TextInput id={`${id}-${f.key}`} type={f.type} value={k[f.key]} onChange={(w) => setFeld(f.key, w)} />
+            <TextInput id={`${id}-${f.key}`} type={f.type} value={k[f.key]} onChange={(w) => setFeld(f.key, w)} maxLength={200} />
           </Field>
         ))}
         <Field label="QR-Link (Rückseite Design 05)" htmlFor={`${id}-qrLink`}>
-          <TextInput id={`${id}-qrLink`} value={k.qrLink} onChange={(w) => setFeld('qrLink', w)} />
+          <TextInput id={`${id}-qrLink`} value={k.qrLink} onChange={(w) => setFeld('qrLink', w)} maxLength={200} />
           <div className="mt-1 flex flex-wrap gap-1">
             <Button variante="text" klein onClick={() => setFeld('qrLink', webUrl(k.web))}>Website</Button>
             <Button variante="text" klein onClick={() => setFeld('qrLink', whatsappUrl(k.telefon))}>WhatsApp</Button>

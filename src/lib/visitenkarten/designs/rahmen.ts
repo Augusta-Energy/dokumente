@@ -26,7 +26,7 @@ export const rahmen: Design = {
     s += z.text(b + 42.5, b + 27.2, 4.2, p.text, k.name, { schrift: 'display', gewicht: 700, ls: 0.03, gross: true, anker: 'middle', maxB: 66 })
     s += z.eyebrow(b + 42.5, b + 31.6, 1.6, p.akzentText, k.rolle, { anker: 'middle', maxB: 66 })
     s += z.rect(b + 36.5, b + 34.2, 12, 0.5, p.akzent)
-    // Geschützte Leerzeichen (U+2003): normale Leerzeichen würde SVG zusammenfassen
+    // Geviertabstände (U+2003) um den Punkt: normale Leerzeichen würden in SVG zu einem zusammenfallen und wirken zu eng.
     const kontakt = [k.telefon, k.email].filter(Boolean).join(' · ')
     s += z.text(b + 42.5, b + 40, 2.2, p.textSanft, kontakt, { anker: 'middle', gewicht: 500, maxB: 66 })
     s += z.eyebrow(b + 42.5, b + 44.2, 1.6, p.akzentText, k.web, { ls: 0.16, anker: 'middle', maxB: 66 })

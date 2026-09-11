@@ -1,6 +1,6 @@
 # Augusta Energy · Dokumente
 
-Interner Generator für drei PDF-Dokumente, die aus Formulareingaben erzeugt werden – komplett im Browser, ohne Server:
+Interner Generator für drei Dokumentarten, die aus Formulareingaben erzeugt werden – komplett im Browser, ohne Server:
 
 - **Energie-Vergleich** (Strom oder Gas): dreiseitiges Angebot mit Anschreiben, Vergleich auf einen Blick und Konditionen im Detail. Jahreskosten, Abschläge, Brutto-Werte und Ersparnis rechnet die App selbst.
 - **Vollmacht**: beschränkt auf Angelegenheiten der Strom-/Gasversorgung der genannten Lieferstellen (Auskünfte, Angebote, Vertragsabschluss und -kündigung, Lieferantenwechsel, Rechnungsprüfung). Alles andere ist ausdrücklich ausgeschlossen. Das Dokument ist bewusst zweiseitig: der vollständige Wortlaut passt nicht auf eine A4-Seite.

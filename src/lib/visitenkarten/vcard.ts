@@ -28,7 +28,7 @@ export function vcardText(k: Karte, firma: string): string {
     const vorname = teile.length > 1 ? teile.slice(0, -1).join(' ') : (teile[0] ?? '')
     zeilen.push(`N:${wert(nachname)};${wert(vorname)};;;`, `FN:${wert(name)}`)
   }
-  if (firma) zeilen.push(`ORG:${wert(firma)}`)
+  if (firma) zeilen.push(`ORG:${wert(firma.trim())}`)
   if (k.rolle) zeilen.push(`TITLE:${wert(k.rolle)}`)
   if (k.telefon) zeilen.push(`TEL;TYPE=CELL:${normalisiereTelefon(k.telefon)}`)
   if (k.email) zeilen.push(`EMAIL:${k.email}`)
