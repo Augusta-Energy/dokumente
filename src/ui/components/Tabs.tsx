@@ -36,7 +36,7 @@ export function Tabs<T extends string>({ wert, onChange, tabs }: { wert: T; onCh
   }
 
   return (
-    <div role="tablist" aria-label="Dokumentart" className="flex gap-8 border-b border-line" onKeyDown={onKeyDown}>
+    <div role="tablist" aria-label="Dokumentart" className="flex flex-wrap gap-x-6 gap-y-1 border-b border-line" onKeyDown={onKeyDown}>
       {tabs.map((tab, index) => {
         const aktiv = tab.wert === wert
         return (

@@ -1,6 +1,6 @@
 const HINWEISE: Array<{ titel: string; text: string }> = [
   { titel: 'Endformat', text: '85 × 55 mm quer (Standard-Visitenkarte). Alle Layouts halten 5 mm Sicherheitsabstand zur Schnittkante – mit dem Schalter „Schnittkante & Sicherheitsbereich“ prüfbar.' },
-  { titel: 'Druck-PDF', text: '91 × 61 mm inkl. 3 mm Beschnitt umlaufend, mit gesetzter Trim-Box. Seite 1 = Vorderseite, Seite 2 = Rückseite, gerastert mit 600 dpi (sRGB). „Verlustfrei“ bettet die Seiten unkomprimiert ein (größere Datei, keine JPEG-Artefakte).' },
+  { titel: 'Druck-PDF', text: '91 × 61 mm inkl. 3 mm Beschnitt umlaufend, mit gesetzter Trim-Box. Seite 1 = Vorderseite, Seite 2 = Rückseite, gerastert mit 600 dpi (sRGB). „Verlustfrei“ bettet die Seiten verlustfrei komprimiert ein (Flate; größere Datei, keine JPEG-Artefakte).' },
   { titel: 'Drucken → Vektor-PDF', text: 'Öffnet beide Seiten in exakter physischer Größe im Druckdialog – dort „Als PDF sichern“ wählen. Text bleibt echter Vektor; Schnittmarken in den Ecken zeigen die Schnittkante.' },
   { titel: 'PNG 300 / 600 dpi', text: '300 dpi (1004 × 650 px) genügt für Online-Druckereien wie Flyeralarm, Vistaprint oder WIRmachenDRUCK; 600 dpi (2008 × 1299 px) für höchste Rasterqualität. Mit aktiviertem Beschnitt-Export „mit Beschnitt“ hochladen.' },
   { titel: 'SVG', text: 'Vektorquelle mit eingebetteten Schriften – beliebig skalierbar, editierbar in Illustrator, Inkscape oder Affinity. Für Profi-Druckereien oder Weiterbearbeitung.' },

@@ -1,4 +1,4 @@
-import { farben } from '../../brand/colors'
+import { farben, mitAlpha } from '../../brand/colors'
 import type { Farbwelt } from './typen'
 
 export type Palette = {
@@ -43,8 +43,8 @@ export const PALETTEN: Record<Farbwelt, Palette> = {
   dunkel: {
     grund: farben.ink,
     text: farben.cream,
-    textSanft: 'rgba(245,243,238,0.82)',
-    label: 'rgba(245,243,238,0.55)',
+    textSanft: mitAlpha(farben.cream, 0.82),
+    label: mitAlpha(farben.cream, 0.55),
     akzent: farben.gold,
     akzentText: farben.gold,
     linie: farben.lineDark,

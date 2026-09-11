@@ -1,7 +1,7 @@
 type Basis = { id: string; value: string; onChange: (wert: string) => void; placeholder?: string }
 
-export function TextInput({ id, value, onChange, placeholder, type = 'text' }: Basis & { type?: 'text' | 'email' | 'tel' }) {
-  return <input id={id} type={type} className="feld" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+export function TextInput({ id, value, onChange, placeholder, type = 'text', maxLength }: Basis & { type?: 'text' | 'email' | 'tel'; maxLength?: number }) {
+  return <input id={id} type={type} className="feld" value={value} placeholder={placeholder} maxLength={maxLength} onChange={(e) => onChange(e.target.value)} />
 }
 
 /** Zahlenfeld mit Einheit rechts; akzeptiert Komma und Punkt (parseDezimal). */

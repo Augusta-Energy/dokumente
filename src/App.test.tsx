@@ -3,8 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import type { ReactNode } from 'react'
 import { App } from './App'
 
-// `DocumentWorkspace` (gerendert von `VergleichWorkspace`/`VollmachtWorkspace`, die `App` immer
-// eines von beiden rendert) ruft `usePDF()` aus '@react-pdf/renderer' direkt im Funktionskörper
+// `DocumentWorkspace` (gerendert von `VergleichWorkspace`/`VollmachtWorkspace`, zwei der drei Reiter,
+// die `App` je nach Auswahl rendert) ruft `usePDF()` aus '@react-pdf/renderer' direkt im Funktionskörper
 // auf. Im Node-Build des Pakets ist das absichtlich nur ein Stub, der wirft (der Web-Build wird
 // nur von Bundlern über das "browser"-Feld in package.json aufgelöst, nicht von Node/Vitest mit
 // test.environment: 'node'). Der Mock ersetzt DocumentWorkspace durch einen reinen
@@ -14,7 +14,7 @@ vi.mock('./ui/DocumentWorkspace', () => ({
 }))
 
 describe('App', () => {
-  it('zeigt Tabs, beide Dokumentnamen, den Absender-Button und ein Tabpanel', () => {
+  it('zeigt Tabs, alle drei Dokumentnamen, den Absender-Button und ein Tabpanel', () => {
     const html = renderToStaticMarkup(<App />)
     expect(html).toContain('role="tablist"')
     expect(html).toContain('Energie-Vergleich')

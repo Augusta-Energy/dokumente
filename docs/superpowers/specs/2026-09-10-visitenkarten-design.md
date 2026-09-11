@@ -93,7 +93,7 @@ Genaue Koordinaten stehen im Implementierungsplan; hier das Konzept (Vorderseite
 2. **02 Signatur** – die A-Marke als großes Wasserzeichen, das rechts über die Kante läuft (Chevron sehr dezent, Querbalken in Gold). Vorderseite sonst wie Klassik mit engerem Textblock. Rückseite: gestapeltes Logo (Marke, AUGUSTA, — ENERGY —) mit Leistungszeile.
 3. **03 Rahmen** – feine Goldlinie als Rahmen 3.5 mm innerhalb der Schnittkante mit kleinen Goldquadraten in den Ecken, zentrierte Komposition: Marke (oder rundes Foto) oben, Name, Rolle, Goldlinie, Kontakt in zentrierten Zeilen ohne Labels. Rückseite: Rahmen, Logo, Leistungszeile, Claim, Website.
 4. **04 Porträt** – großes rundes Foto links (26 mm) mit Goldring; ohne Foto ein Goldring mit der Marke als Monogramm. Rechts Logo klein, Rolle, Name, Kontakt (Adresse ohne Label). Rückseite in der Panel-Farbe (hell: Ink mit hellem Logo, dunkel: Gold mit Ink-Logo), Claim, Website, unten Website und Instagram.
-5. **05 Kontakt-QR** – vCard-QR (24 mm) rechts mit „KONTAKT SPEICHERN“, links Logo, Rolle, Name, Kontakt ohne Adresse; kleines Foto oben rechts. Rückseite: Link-QR (19 mm) mit Host-Zeile in Gold, Logo darunter.
+5. **05 Kontakt-QR** – vCard-QR (26 mm) rechts mit „KONTAKT SPEICHERN“, links Logo, Rolle, Name, Kontakt ohne Adresse; kleines Foto oben rechts. Rückseite: Link-QR (19 mm) mit Host-Zeile in Gold, Logo darunter.
 6. **06 Schräge** – linkes Panel in der Panel-Farbe mit schräger Kante (Neigung der A-Marke), darin Marke und rundes Foto (ohne Foto: Leistungen als drei Zeilen). Rechts Rolle, Name, Goldlinie, Kontakt, Leistungszeile. Rückseite: Panel-Farbe mit schrägem Streifen der Grundfarbe rechts, Logo, Claim, Website.
 
 ## 7. Exporte (`exporte.ts`, `pdfRaster.ts`, `druckansicht.ts`)
