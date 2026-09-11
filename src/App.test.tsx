@@ -19,6 +19,8 @@ describe('App', () => {
     expect(html).toContain('role="tablist"')
     expect(html).toContain('Energie-Vergleich')
     expect(html).toContain('Vollmacht')
+    expect(html).toContain('Visitenkarten')
+    expect(html).not.toContain('aria-controls="panel-visitenkarten"')
     expect(html).toContain('>Absender<')
     expect(html).toContain('role="tabpanel"')
     expect(html).toContain('<h1')
