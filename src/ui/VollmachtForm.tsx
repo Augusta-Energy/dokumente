@@ -8,9 +8,14 @@ import { Section } from './components/Section'
 type Setter = Dispatch<SetStateAction<VollmachtDaten>>
 type Props = { daten: VollmachtDaten; setDaten: Setter }
 
-function teil<K extends keyof VollmachtDaten>(setDaten: Setter, key: K) {
+/** Schlüssel von `VollmachtDaten`, deren Wert ein Objekt (kein Array) ist – nur für diese ergibt
+ *  `teil` (Teil-Update per Merge) Sinn; Arrays (`lieferstellen`) und Primitive (`untervollmacht`)
+ *  scheiden aus. Ersetzt die vorherigen `as object`-Casts durch eine Typ-Einschränkung. */
+type TeilKey = { [P in keyof VollmachtDaten]: VollmachtDaten[P] extends object ? (VollmachtDaten[P] extends unknown[] ? never : P) : never }[keyof VollmachtDaten]
+
+function teil<K extends TeilKey>(setDaten: Setter, key: K) {
   return (patch: Partial<VollmachtDaten[K]>) =>
-    setDaten((d) => ({ ...d, [key]: { ...(d[key] as object), ...(patch as object) } }))
+    setDaten((d) => ({ ...d, [key]: { ...d[key], ...patch } }))
 }
 
 const ENERGIEART_OPTIONEN = (Object.keys(lieferstellenEnergieartLabel) as Lieferstelle['energieart'][]).map((wert) => ({ wert, label: lieferstellenEnergieartLabel[wert] }))
@@ -58,7 +63,11 @@ export function VollmachtForm({ daten, setDaten }: Props) {
           <div key={l.id} className="grid gap-3 border border-line bg-cream/40 p-4 sm:col-span-2 sm:grid-cols-2">
             <div className="flex items-center justify-between sm:col-span-2">
               <span className="eyebrow text-ink-600">Lieferstelle {i + 1}</span>
-              {daten.lieferstellen.length > 1 ? <Button variante="text" klein onClick={() => lieferstelleEntfernen(l.id)}>Entfernen</Button> : null}
+              {daten.lieferstellen.length > 1 ? (
+                <Button variante="text" klein onClick={() => lieferstelleEntfernen(l.id)} aria-label={`Lieferstelle ${i + 1} entfernen`}>
+                  Entfernen
+                </Button>
+              ) : null}
             </div>
             <Field label="Adresse" htmlFor={`vm-ls-${l.id}-adresse`} breit><TextInput id={`vm-ls-${l.id}-adresse`} value={l.adresse} onChange={(adresse) => lieferstelleAendern(l.id, { adresse })} placeholder="Musterstraße 12, 86150 Augsburg" /></Field>
             <Field label="Energieart" htmlFor={`vm-ls-${l.id}-energieart`}><Select id={`vm-ls-${l.id}-energieart`} value={l.energieart} onChange={(energieart) => lieferstelleAendern(l.id, { energieart })} optionen={ENERGIEART_OPTIONEN} /></Field>

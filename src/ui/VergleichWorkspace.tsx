@@ -20,13 +20,14 @@ export function VergleichWorkspace({ absender }: { absender: Absender }) {
   const entprellt = useDebouncedValue(daten, 400)
   const dokument = useMemo(() => <VergleichDocument daten={entprellt} absender={absender} />, [entprellt, absender])
   const ergebnis = useMemo(() => berechneVergleich(daten), [daten])
-  const fehlend = useMemo(() => fehlendePflichtfelder(daten), [daten])
+  const fehlend = useMemo(() => fehlendePflichtfelder(entprellt), [entprellt])
 
   return (
     <DocumentWorkspace
       dokument={dokument}
-      dateiname={vergleichDateiname(daten)}
+      dateiname={vergleichDateiname(entprellt)}
       fehlendeFelder={fehlend}
+      aktuell={entprellt === daten}
       onBeispiel={() => setDaten(beispielVergleich(heuteIso()))}
       onZuruecksetzen={() => setDaten(leererVergleich(heuteIso(), neueVergleichsnummer(), absender.ansprechpartner))}
     >

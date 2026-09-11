@@ -28,4 +28,14 @@ describe('fehlendePflichtfelder (Vergleich)', () => {
     d.lieferstelle.laufzeitMonate = '0'
     expect(fehlendePflichtfelder(d)).toEqual(['Laufzeit'])
   })
+  it('verlangt einen gültigen Umsatzsteuersatz', () => {
+    const d = beispielVergleich('2026-09-10')
+    d.vergleich.ustSatz = ''
+    expect(fehlendePflichtfelder(d)).toEqual(['Umsatzsteuersatz'])
+  })
+  it('verlangt eine ganzzahlige Laufzeit', () => {
+    const d = beispielVergleich('2026-09-10')
+    d.lieferstelle.laufzeitMonate = '12,5'
+    expect(fehlendePflichtfelder(d)).toEqual(['Laufzeit'])
+  })
 })

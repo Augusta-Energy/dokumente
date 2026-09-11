@@ -13,19 +13,22 @@ type Props = {
   dokument: ReactElement<DocumentProps>
   dateiname: string
   fehlendeFelder: string[]
+  /** true, wenn die entprellten Daten (Basis von `dokument`/`dateiname`/`fehlendeFelder`) den aktuellen
+   *  Formulardaten entsprechen – solange die Entprellung noch nachzieht, darf nicht heruntergeladen werden. */
+  aktuell: boolean
   onBeispiel: () => void
   onZuruecksetzen: () => void
   children: ReactNode
 }
 
 /** Formular links, klebende Vorschau mit Werkzeugleiste rechts (ab lg), sonst untereinander. */
-export function DocumentWorkspace({ dokument, dateiname, fehlendeFelder, onBeispiel, onZuruecksetzen, children }: Props) {
+export function DocumentWorkspace({ dokument, dateiname, fehlendeFelder, aktuell, onBeispiel, onZuruecksetzen, children }: Props) {
   const [instanz, aktualisiere] = usePDF()
   useEffect(() => {
     aktualisiere(dokument)
   }, [dokument, aktualisiere])
 
-  const bereit = Boolean(instanz.url) && !instanz.loading && !instanz.error && fehlendeFelder.length === 0
+  const bereit = Boolean(instanz.url) && !instanz.loading && !instanz.error && aktuell && fehlendeFelder.length === 0
   const fehlertext = fehlermeldung(instanz.error)
 
   return (
@@ -50,7 +53,7 @@ export function DocumentWorkspace({ dokument, dateiname, fehlendeFelder, onBeisp
           </Button>
         </div>
         <div className="mt-3 min-h-6 text-sm" aria-live="polite">
-          {instanz.loading ? <p className="text-muted">Vorschau wird aktualisiert …</p> : null}
+          {instanz.loading || !aktuell ? <p className="text-muted">Vorschau wird aktualisiert …</p> : null}
           {instanz.error ? (
             <p role="alert" className="border border-red-700 bg-red-50 p-3 text-red-800">Die Vorschau konnte nicht erstellt werden: {fehlertext}</p>
           ) : null}

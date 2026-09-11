@@ -67,9 +67,10 @@ export function berechneVergleich(d: VergleichDaten): VergleichErgebnis {
   const aktuell = berechneTarif(d.aktuell, verbrauchKwh, laufzeitJahre)
 
   const ersparnisJahr = aktuell.jahreskosten - empfehlung.jahreskosten
-  const kaReduktionJahr = zahlOder0(d.konzessionsabgabe.reduktionProJahr)
-  const honorarAnbieterwechsel = d.honorar.anzeigen ? zahlOder0(d.honorar.anbieterwechsel) : 0
-  const honorarKonzessionsabgabe = d.honorar.anzeigen ? zahlOder0(d.honorar.konzessionsabgabe) : 0
+  // Negative Eingaben würden die Ersparnis künstlich aufblähen (Honorar wird abgezogen, KA-Reduktion addiert) – daher hier gekappt.
+  const kaReduktionJahr = Math.max(0, zahlOder0(d.konzessionsabgabe.reduktionProJahr))
+  const honorarAnbieterwechsel = d.honorar.anzeigen ? Math.max(0, zahlOder0(d.honorar.anbieterwechsel)) : 0
+  const honorarKonzessionsabgabe = d.honorar.anzeigen ? Math.max(0, zahlOder0(d.honorar.konzessionsabgabe)) : 0
   const honorarSumme = honorarAnbieterwechsel + honorarKonzessionsabgabe
   const ersparnisLaufzeit = ersparnisJahr * laufzeitJahre
   const kaReduktionLaufzeit = kaReduktionJahr * laufzeitJahre

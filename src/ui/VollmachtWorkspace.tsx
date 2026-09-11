@@ -16,13 +16,14 @@ export function VollmachtWorkspace({ absender }: { absender: Absender }) {
   const [daten, setDaten] = useLocalStorageState<VollmachtDaten>(VOLLMACHT_KEY, VORLAGE)
   const entprellt = useDebouncedValue(daten, 400)
   const dokument = useMemo(() => <VollmachtDocument daten={entprellt} absender={absender} />, [entprellt, absender])
-  const fehlend = useMemo(() => fehlendePflichtfelder(daten), [daten])
+  const fehlend = useMemo(() => fehlendePflichtfelder(entprellt), [entprellt])
 
   return (
     <DocumentWorkspace
       dokument={dokument}
-      dateiname={vollmachtDateiname(daten)}
+      dateiname={vollmachtDateiname(entprellt)}
       fehlendeFelder={fehlend}
+      aktuell={entprellt === daten}
       onBeispiel={() => setDaten(beispielVollmacht())}
       onZuruecksetzen={() => setDaten(leereVollmacht())}
     >

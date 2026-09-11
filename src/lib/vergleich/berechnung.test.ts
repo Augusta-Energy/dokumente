@@ -54,6 +54,13 @@ describe('berechneVergleich', () => {
     d.honorar = { anzeigen: true, anbieterwechsel: '', konzessionsabgabe: '' }
     expect(berechneVergleich(d).honorarSichtbar).toBe(false)
   })
+  it('klemmt ein negatives Honorar auf 0, statt die Ersparnis aufzublähen', () => {
+    const d = beispiel()
+    d.honorar = { anzeigen: true, anbieterwechsel: '-50', konzessionsabgabe: '' }
+    const e = berechneVergleich(d)
+    expect(e.honorarSumme).toBe(0)
+    expect(e.gesamtersparnisLaufzeit).toBeCloseTo(1961.8 + 1589.66, 1)
+  })
   it('liefert negative Ersparnis, wenn die Empfehlung teurer ist', () => {
     const d = beispiel()
     d.empfehlung.arbeitspreisCt = '40'
