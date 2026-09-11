@@ -13,12 +13,21 @@ function wert(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/[;,]/g, (z) => '\\' + z)
 }
 
-/** vCard 3.0 (CRLF). Nachname = letztes Wort; ein einzelnes Wort gilt als Vorname. */
+/** vCard 3.0 (CRLF). Nachname = letztes Wort; ein einzelnes Wort gilt als Vorname.
+ *  Entspricht der Name (getrimmt, ohne Groß-/Kleinschreibung) der Firma, ist die Karte eine Organisationskarte
+ *  (z. B. die „Zentrale“-Karte, deren Name aus dem Firmennamen übernommen wird) – dann bleibt N leer und FN trägt die Firma. */
 export function vcardText(k: Karte, firma: string): string {
-  const teile = k.name.trim().split(/\s+/).filter(Boolean)
-  const nachname = teile.length > 1 ? teile[teile.length - 1] : ''
-  const vorname = teile.length > 1 ? teile.slice(0, -1).join(' ') : (teile[0] ?? '')
-  const zeilen = ['BEGIN:VCARD', 'VERSION:3.0', `N:${wert(nachname)};${wert(vorname)};;;`, `FN:${wert(k.name.trim())}`]
+  const name = k.name.trim()
+  const istOrganisation = firma.trim() !== '' && name.toLowerCase() === firma.trim().toLowerCase()
+  const zeilen = ['BEGIN:VCARD', 'VERSION:3.0']
+  if (istOrganisation) {
+    zeilen.push('N:;;;;', `FN:${wert(firma.trim())}`)
+  } else {
+    const teile = name.split(/\s+/).filter(Boolean)
+    const nachname = teile.length > 1 ? teile[teile.length - 1] : ''
+    const vorname = teile.length > 1 ? teile.slice(0, -1).join(' ') : (teile[0] ?? '')
+    zeilen.push(`N:${wert(nachname)};${wert(vorname)};;;`, `FN:${wert(name)}`)
+  }
   if (firma) zeilen.push(`ORG:${wert(firma)}`)
   if (k.rolle) zeilen.push(`TITLE:${wert(k.rolle)}`)
   if (k.telefon) zeilen.push(`TEL;TYPE=CELL:${normalisiereTelefon(k.telefon)}`)
