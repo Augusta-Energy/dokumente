@@ -1,3 +1,4 @@
+import { farben } from '../../brand/colors'
 import { BAR_POINTS, CHEVRON_POINTS, LEG_POINTS, LOGO_VIEWBOX, MARKE_SCALE, MARKE_VIEWBOX } from '../../brand/logoGeometry'
 import type { Palette } from './palette'
 import { webUrl } from './personen'
@@ -119,7 +120,12 @@ export class Zeichner {
     if (!s) return ''
     const schrift = o.schrift ?? 'text'
     const gewicht = o.gewicht ?? 400
-    const attr = [`x="${N(x)}" y="${N(y)}"`, `font-family="${FAMILIE_CSS[schrift]}"`, `font-size="${N(groesse)}"`, `font-weight="${gewicht}"`, `fill="${fill}"`]
+    // SVG hängt die Laufweite (letter-spacing) auch hinter das letzte Zeichen; bei zentriertem oder
+    // rechtsbündigem Anker verschiebt diese unsichtbare Extra-Lücke die sichtbaren Glyphen vom Anker weg.
+    // Wir schieben x um die halbe (middle) bzw. ganze (end) Lücke, damit die sichtbaren Zeichen wieder
+    // exakt zentriert bzw. ausgerichtet erscheinen.
+    const xAnker = o.ls && o.anker === 'middle' ? x + (o.ls * groesse) / 2 : o.ls && o.anker === 'end' ? x + o.ls * groesse : x
+    const attr = [`x="${N(xAnker)}" y="${N(y)}"`, `font-family="${FAMILIE_CSS[schrift]}"`, `font-size="${N(groesse)}"`, `font-weight="${gewicht}"`, `fill="${fill}"`]
     if (o.ls) attr.push(`letter-spacing="${N(o.ls * groesse)}"`)
     if (o.anker) attr.push(`text-anchor="${o.anker}"`)
     if (o.opacity !== undefined) attr.push(`opacity="${N(o.opacity)}"`)
@@ -196,7 +202,7 @@ export class Zeichner {
     const bild =
       this.modus === 'vorschau'
         ? `<use href="#${FOTO_ID}" ${filter}/>`
-        : `<image xlink:href="${f.src}" href="${f.src}" x="0" y="0" width="${f.w}" height="${f.h}" ${filter}/>`
+        : `<image xlink:href="${esc(f.src)}" href="${esc(f.src)}" x="0" y="0" width="${f.w}" height="${f.h}" ${filter}/>`
     return (
       `<clipPath id="${id}"><circle cx="${N(cx)}" cy="${N(cy)}" r="${N(r)}"/></clipPath>` +
       this.kreis(cx, cy, r, o.platte ?? this.p.platte) +
@@ -207,11 +213,12 @@ export class Zeichner {
 
   /** QR-Code auf weißer Platte mit Ruhezone. */
   qrPlatte(q: QrPfad, x: number, y: number, groesse: number, o: QrOpt = {}): string {
-    const ruhe = o.ruhe ?? Math.max(1.6, groesse * 0.085)
+    // Bei sehr kleiner groesse darf die Ruhezone nicht so groß werden, dass die Modulgröße negativ wird.
+    const ruhe = Math.min(o.ruhe ?? Math.max(1.6, groesse * 0.085), groesse / 4)
     const m = (groesse - 2 * ruhe) / q.n
     return (
       this.rect(x, y, groesse, groesse, '#ffffff', { rx: 0.6, stroke: o.stroke, sw: o.sw ?? 0.3 }) +
-      `<g transform="translate(${N(x + ruhe)} ${N(y + ruhe)}) scale(${N(m)})"><path d="${q.pfad}" fill="#111315"/></g>`
+      `<g transform="translate(${N(x + ruhe)} ${N(y + ruhe)}) scale(${N(m)})"><path d="${q.pfad}" fill="${farben.ink}"/></g>`
     )
   }
 

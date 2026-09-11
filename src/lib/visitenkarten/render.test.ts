@@ -20,10 +20,16 @@ function optionen(teil: Partial<RenderOptionen>): RenderOptionen {
   return { karte, firma: 'Augusta Energy', farbwelt: 'hell', seite: 'vorderseite', beschnitt: 0, modus: 'vorschau', foto, ...teil }
 }
 
-/** Grundlinien aller <text>-Elemente (x, y) – nur direkte Attribute, keine Logo-Texte in verschachtelten <svg>. */
+/** Grundlinien aller <text>-Elemente (x, y) – attributreihenfolge-unabhängig, keine Logo-Texte in verschachtelten <svg>. */
 function textPositionen(svg: string): Array<[number, number]> {
   const ohneLogos = svg.replace(/<svg [^>]*viewBox="0 0 (470 100|307 245)"[\s\S]*?<\/svg>/g, '')
-  return [...ohneLogos.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)"/g)].map((m) => [Number(m[1]), Number(m[2])])
+  const positionen: Array<[number, number]> = []
+  for (const m of ohneLogos.matchAll(/<text\b([^>]*)>/g)) {
+    const x = m[1].match(/\bx="([\d.-]+)"/)
+    const y = m[1].match(/\by="([\d.-]+)"/)
+    if (x && y) positionen.push([Number(x[1]), Number(y[1])])
+  }
+  return positionen
 }
 
 describe('renderKarte', () => {
@@ -48,7 +54,9 @@ describe('renderKarte', () => {
         for (const seite of seiten) {
           for (const modusFoto of [foto, null]) {
             const svg = renderKarte(design, optionen({ farbwelt, seite, foto: modusFoto }))
-            for (const [x, y] of textPositionen(svg)) {
+            const positionen = textPositionen(svg)
+            expect(positionen.length, `${design.id}/${farbwelt}/${seite}`).toBeGreaterThanOrEqual(1)
+            for (const [x, y] of positionen) {
               expect(x, `${design.id}/${farbwelt}/${seite} x`).toBeGreaterThanOrEqual(SICHERHEIT)
               expect(x, `${design.id}/${farbwelt}/${seite} x`).toBeLessThanOrEqual(KARTE.breite - SICHERHEIT)
               expect(y, `${design.id}/${farbwelt}/${seite} y`).toBeGreaterThanOrEqual(SICHERHEIT)
