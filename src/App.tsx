@@ -6,13 +6,15 @@ import { AbsenderPanel } from './ui/AbsenderPanel'
 import { Button } from './ui/components/Button'
 import { Tabs } from './ui/components/Tabs'
 import { VergleichWorkspace } from './ui/VergleichWorkspace'
+import { VisitenkartenWorkspace } from './ui/visitenkarten/VisitenkartenWorkspace'
 import { VollmachtWorkspace } from './ui/VollmachtWorkspace'
 
-type Tab = 'vergleich' | 'vollmacht'
+type Tab = 'vergleich' | 'vollmacht' | 'visitenkarten'
 
 const TABS: { wert: Tab; label: string; id: string; panelId: string }[] = [
   { wert: 'vergleich', label: 'Energie-Vergleich', id: 'tab-vergleich', panelId: 'panel-vergleich' },
   { wert: 'vollmacht', label: 'Vollmacht', id: 'tab-vollmacht', panelId: 'panel-vollmacht' },
+  { wert: 'visitenkarten', label: 'Visitenkarten', id: 'tab-visitenkarten', panelId: 'panel-visitenkarten' },
 ]
 
 export function App() {
@@ -38,7 +40,9 @@ export function App() {
           <Tabs wert={tab} onChange={setTab} tabs={TABS} />
         </div>
         <div className="mt-8" role="tabpanel" id={aktiverTab.panelId} aria-labelledby={aktiverTab.id}>
-          {tab === 'vergleich' ? <VergleichWorkspace absender={absender} /> : <VollmachtWorkspace absender={absender} />}
+          {tab === 'vergleich' ? <VergleichWorkspace absender={absender} /> : null}
+          {tab === 'vollmacht' ? <VollmachtWorkspace absender={absender} /> : null}
+          {tab === 'visitenkarten' ? <VisitenkartenWorkspace absender={absender} /> : null}
         </div>
       </main>
 
