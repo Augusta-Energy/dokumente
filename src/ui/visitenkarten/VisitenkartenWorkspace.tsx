@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SCHRIFTEN_CSS } from '../../brand/fonts.svg.browser'
 import type { Absender } from '../../lib/absender'
 import { useLocalStorageState } from '../../lib/storage'
@@ -19,6 +19,9 @@ import { KartenPanel } from './KartenPanel'
 export const VISITENKARTE_KEY = 'augusta-dokumente:v1:visitenkarte'
 const ALLE_FARBWELTEN: readonly Farbwelt[] = ['hell', 'dunkel']
 const SEITEN: readonly Seite[] = ['vorderseite', 'rueckseite']
+
+// Modul-Ebene: überlebt das Neu-Mounten beim Tab-Wechsel; ein Reload wendet den Deep-Link erneut an, wie in der Spec.
+let deepLinkGeprueft = false
 
 function startZustand(absender: Absender): VisitenkartenZustand {
   return { personId: PERSONEN[0].id, karte: personKarte(PERSONEN[0], absender), fotoAnzeigen: true, hilfslinien: false, beschnittExport: false, farbwelt: 'beide' }
@@ -62,10 +65,9 @@ export function VisitenkartenWorkspace({ absender }: { absender: Absender }) {
   )
 
   // Deep-Link ?person=<id> gewinnt beim ersten Rendern gegen den gespeicherten Zustand
-  const deepLinkGeprueft = useRef(false)
   useEffect(() => {
-    if (deepLinkGeprueft.current) return
-    deepLinkGeprueft.current = true
+    if (deepLinkGeprueft) return
+    deepLinkGeprueft = true
     const id = new URLSearchParams(window.location.search).get('person')
     if (id) ladePerson(id)
   }, [ladePerson])
@@ -75,12 +77,12 @@ export function VisitenkartenWorkspace({ absender }: { absender: Absender }) {
     if (fotoQuelle !== 'person') return
     const p = findePerson(zustand.personId)
     if (!p) return
+    setFotoFehler(null)
     if (!p.foto) {
       setFoto(null)
       return
     }
     let aktiv = true
-    setFotoFehler(null)
     ladeTeamFoto(p).then(
       (f) => {
         if (aktiv) setFoto(f)

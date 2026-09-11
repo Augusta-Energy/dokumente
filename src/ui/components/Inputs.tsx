@@ -50,10 +50,10 @@ export function RadioGroup<T extends string>({ name, label, value, onChange, opt
   )
 }
 
-export function Toggle({ id, checked, onChange, label, hinweis }: { id: string; checked: boolean; onChange: (checked: boolean) => void; label: string; hinweis?: string }) {
+export function Toggle({ id, checked, onChange, label, hinweis, disabled }: { id: string; checked: boolean; onChange: (checked: boolean) => void; label: string; hinweis?: string; disabled?: boolean }) {
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-start gap-3 text-sm">
-      <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="mt-0.5 h-4 w-4 accent-gold-deep" />
+    <label htmlFor={id} className={`flex cursor-pointer items-start gap-3 text-sm ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}>
+      <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} disabled={disabled} className="mt-0.5 h-4 w-4 accent-gold-deep" />
       <span>
         <span className="font-medium">{label}</span>
         {hinweis ? <span className="block text-xs text-muted">{hinweis}</span> : null}

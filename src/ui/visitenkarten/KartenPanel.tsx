@@ -88,8 +88,8 @@ export function KartenPanel({ zustand, hatFoto, fotoFehler, onPerson, onKarte, o
         </Field>
       </div>
       <div className="mt-5 flex flex-wrap items-start gap-x-8 gap-y-3">
-        <Toggle id={`${id}-foto`} checked={zustand.fotoAnzeigen && hatFoto} onChange={(w) => onOption('fotoAnzeigen', w)} label="Foto anzeigen" hinweis={hatFoto ? undefined : 'Für diese Karte liegt kein Foto vor.'} />
-        <label className="btn btn-outline btn-sm cursor-pointer">
+        <Toggle id={`${id}-foto`} checked={zustand.fotoAnzeigen && hatFoto} onChange={(w) => onOption('fotoAnzeigen', w)} label="Foto anzeigen" hinweis={hatFoto ? undefined : 'Für diese Karte liegt kein Foto vor.'} disabled={!hatFoto} />
+        <label className="btn btn-outline btn-sm cursor-pointer focus-within:outline focus-within:outline-2 focus-within:outline-gold">
           <input type="file" accept="image/*" className="sr-only" onChange={onDatei} />
           Eigenes Foto …
         </label>
