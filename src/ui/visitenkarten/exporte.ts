@@ -43,6 +43,9 @@ export async function rastern(erzeuge: SvgErzeuger, seite: Seite, dpi: number, b
   canvas.height = hPx
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Canvas nicht verfügbar')
+  // Weißer Grund: JPEG kennt kein Alpha (würde auf Schwarz kompositieren) und Flate verwirft den Alphakanal ohnehin.
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, wPx, hPx)
   ctx.drawImage(bild, 0, 0, wPx, hPx)
   return canvas
 }

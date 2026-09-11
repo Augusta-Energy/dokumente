@@ -42,8 +42,11 @@ export function baueRasterPdf(seiten: PdfSeite[], breiteMm: number, hoeheMm: num
         `/Resources << /XObject << /Im${i} ${nBild} 0 R >> >> /Contents ${nInhalt} 0 R >>\nendobj\n`,
     )
     const inhalt = `q ${fx(W)} 0 0 ${fx(H)} 0 0 cm /Im${i} Do Q\n`
+    const inhaltBytes = enc.encode(inhalt)
     beginObj(nInhalt)
-    pushStr(`<< /Length ${inhalt.length} >>\nstream\n${inhalt}endstream\nendobj\n`)
+    pushStr(`<< /Length ${inhaltBytes.length} >>\nstream\n`)
+    push(inhaltBytes)
+    pushStr('endstream\nendobj\n')
     beginObj(nBild)
     pushStr(
       `<< /Type /XObject /Subtype /Image /Width ${seite.w} /Height ${seite.h} ` +

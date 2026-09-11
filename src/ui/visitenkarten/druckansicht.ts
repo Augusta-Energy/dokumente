@@ -19,7 +19,8 @@ export function oeffneDruckansicht(erzeuge: SvgErzeuger, titel: string): void {
       `.pg{width:${W}mm;height:${H}mm;page-break-after:always;break-after:page;overflow:hidden}` +
       `.pg:last-child{page-break-after:auto;break-after:auto}.pg svg{display:block;width:${W}mm;height:${H}mm}</style></head>` +
       `<body>${seite(vorne)}${seite(hinten)}` +
-      `<script>window.addEventListener("load",function(){var f=document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve();f.then(function(){setTimeout(function(){window.print()},250)})})<\/script>` +
+      `<script>window.addEventListener("load",function(){var f=document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve();f.then(function(){setTimeout(function(){window.print()},250)})})</scr` +
+      `ipt>` +
       `</body></html>`,
   )
   fenster.document.close()
