@@ -51,7 +51,7 @@ Reine TypeScript-Funktionen ohne DOM, lauffähig in Vitest und im Node-Skript.
 
 - **Koordinaten in mm.** `KARTE = { breite: 85, hoehe: 55 }`, `BESCHNITT = 3`, `SICHERHEIT = 5`. Jede Seite wird als innerer SVG-String im Raum `(KARTE + 2·b)` gezeichnet; Layouts addieren `b` zu allen Trim-Koordinaten, Hintergründe füllen `0..W`. Zahlen werden auf 3 Nachkommastellen gerundet.
 - **Dokumenthülle** `svgDokument(inner, o)`: `<svg width="…mm" height="…mm" viewBox="0 0 W H">`, optional `<style>` mit Schriften-CSS (nur Export), Sättigungsfilter fürs Foto (`feColorMatrix saturate 0.5` – entspricht der Team-Darstellung der Website), Hilfslinien (Trim: `#e11d48` gestrichelt 1.6/1.1, Sicherheitsbereich: `#0284c7` 1/1) und Schnittmarken (grau 0.15, 0.8 mm Abstand) wie beim Vorbild.
-- **Zeichner** (`svg.ts`): Klasse mit Kontext (`b`, `W`, `H`, `uid`, Palette `p`, Karte `k`, `dunkel`, Foto, Messer) und Methoden `rect`, `polygon`, `linie`, `kreis`, `text`, `eyebrow`, `logo`, `marke`, `logoGestapelt`, `foto`, `hatFoto`, `qrPlatte`, `kontaktzeilen`, `raster`, `kreuz`. `text` unterstützt Schrift (`display` = Montserrat, `text` = Raleway), Gewicht, Laufweite (em), Anker, Deckkraft, Großschreibung und `maxB` (Maximalbreite: bei Überbreite `textLength`/`lengthAdjust="spacingAndGlyphs"`).
+- **Zeichner** (`svg.ts`): Klasse mit Kontext (`b`, `W`, `H`, `uid`, Palette `p`, Karte `k`, `dunkel`, Foto, Messer) und Methoden `rect`, `polygon`, `linie`, `kreis`, `text`, `eyebrow`, `logo`, `marke`, `logoGestapelt`, `foto`, `hatFoto`, `qrPlatte`, `vcardQr`, `linkQr`, `kontaktzeilen`. `text` unterstützt Schrift (`display` = Montserrat, `text` = Raleway), Gewicht, Laufweite (em), Anker, Deckkraft, Großschreibung und `maxB` (Maximalbreite: bei Überbreite `textLength`/`lengthAdjust="spacingAndGlyphs"`).
 - **Textbreite** (`textbreite.ts`): `Messer = (text, groesse, schrift, gewicht, ls) => mm`. Standard ist eine Schätzung (Montserrat 0.68 em/Zeichen bei Großbuchstaben, sonst 0.6; Raleway 0.52) plus Laufweite. Im Browser liefert `canvasMesser()` echte Breiten über `CanvasRenderingContext2D.measureText`, sobald `document.fonts.ready` erfüllt ist.
 - **Logo**: exakt das Website-Logo als verschachteltes SVG (`viewBox 0 0 470 100`; Marke aus `logoGeometry.ts`, Wortmarke „AUGUSTA“ Montserrat 600 mit `textLength 315`, Goldlinien, „ENERGY“ `textLength 157.5`). Breite = 4.7 × Höhe. `marke` zeichnet nur die A-Marke (307 × 245). `logoGestapelt` setzt Marke, „AUGUSTA“ und „— ENERGY —“ zentriert untereinander (wie das runde Logo der Website). Farben pro Aufruf überschreibbar (Grundfarbe, Gold, Deckkraft), damit Wasserzeichen und Panels funktionieren.
 - **Foto** `foto(x, y, d)`: Kreis mit Platte, gesättigt reduziertes Bild im Ausschnitt (verschachteltes `<svg viewBox="crop">`), Goldring (0.5 mm). Im Modus `vorschau` referenziert das Bild per `<use href="#vk-foto">` ein einmal in der Seite hinterlegtes `<image id="vk-foto">` (hält das DOM bei 24 Vorschauen klein); im Modus `export` wird das `<image>` mit data-URL eingebettet.
@@ -79,7 +79,8 @@ Palette (`palette.ts`, Quelle `farben` aus `src/brand/colors.ts`):
 | panel | ink | gold |
 | panelText | cream | ink |
 | panelLogoBase | cream | ink |
-| panelGold | gold | goldDeep |
+| panelGold | gold | cream |
+| panelAkzent | gold | ink |
 
 Design-Vertrag (`designs/index.ts`): `{ id, nr, titel, beschreibung, vorderseite(z), rueckseite(z) }`; `DESIGNS` ist die geordnete Liste. Jedes Design ist eine Datei `designs/<id>.ts`, liest nur den Zeichner und die Palette, kennt keine Farbwelt außer über `z.dunkel`/`z.p`.
 
@@ -127,6 +128,7 @@ Keine jsdom-Tests der Oberfläche; Sichtprüfung über die Galerie und Screensho
 
 - **Kein direkter Vektor-PDF-Download**: `@react-pdf/renderer` kennt weder SVG-Muster noch Bilder im SVG; ein zweiter Renderer würde jedes Layout doppelt implementieren. Der Weg des Vorbilds (Druckansicht → „Als PDF sichern“) liefert echte Vektoren; für Online-Druckereien reicht das 600-dpi-PDF.
 - **Fotos halb entsättigt** (saturate 0.5) statt Schwarzweiß – entspricht der Team-Darstellung auf augusta-energy.de.
+- **Rahmen (03)** liegt 4.5 mm innerhalb der Schnittkante (Schnitttoleranz), nicht 3.5 mm wie beim Vorbild.
 - **Telefon/E-Mail der Personen** sind die Firmendaten (persönliche Durchwahlen unbekannt); frei editierbar.
 - **Zentrale-Karte** ohne Foto, Name = Firma.
 - **Vorschau-Foto per `<use>`** statt 24-facher data-URL-Einbettung.
