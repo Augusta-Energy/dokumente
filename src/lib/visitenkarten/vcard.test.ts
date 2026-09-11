@@ -45,4 +45,12 @@ describe('vcardText', () => {
     expect(v).not.toContain('TEL')
     expect(v).not.toContain('ORG')
   })
+
+  it('behandelt die Karte als Organisation, wenn der Name (getrimmt, ohne Groß-/Kleinschreibung) der Firma entspricht', () => {
+    const v = vcardText({ ...karte, name: ' augusta energy ' }, 'Augusta Energy')
+    const zeilen = v.split('\r\n')
+    expect(zeilen).toContain('N:;;;;')
+    expect(zeilen).toContain('FN:Augusta Energy')
+    expect(zeilen).toContain('ORG:Augusta Energy')
+  })
 })
