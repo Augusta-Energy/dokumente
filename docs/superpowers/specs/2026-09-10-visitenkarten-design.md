@@ -74,7 +74,6 @@ Palette (`palette.ts`, Quelle `farben` aus `src/brand/colors.ts`):
 | akzentText | goldDeep #b3891f | gold |
 | linie | line #e6e2d8 | lineDark #2a2d31 |
 | platte | line | ink800 #1b1e21 |
-| raster | rgba(17,19,21,.06) | rgba(245,243,238,.06) |
 | logoBase | ink | cream |
 | panel | ink | gold |
 | panelText | cream | ink |
@@ -131,6 +130,8 @@ Keine jsdom-Tests der Oberfläche; Sichtprüfung über die Galerie und Screensho
 - **Rahmen (03)** liegt 4.5 mm innerhalb der Schnittkante (Schnitttoleranz), nicht 3.5 mm wie beim Vorbild.
 - **Telefon/E-Mail der Personen** sind die Firmendaten (persönliche Durchwahlen unbekannt); frei editierbar.
 - **Zentrale-Karte** ohne Foto, Name = Firma.
+- **Kontakt-QR (05)** trägt eine 26-mm-Platte (Module ≈ 0,35 mm bei Fehlerkorrektur M, Ruhezone ≥ 4 Module); die Rückseite nutzt eine Ruhezone von 2,5 mm. Eine Karte, deren Name dem Firmennamen entspricht, ist eine Organisationskarte: die vCard setzt `N:;;;;` und `FN` = Firma.
+- **Wasserzeichen (02)** und halbtransparente Palettenwerte werden über `mitAlpha(farben.x, α)` aus den Markenfarben abgeleitet (keine rgba-Literale in Designs).
 - **Vorschau-Foto per `<use>`** statt 24-facher data-URL-Einbettung.
 - **`qrcode`** (1.5.x) als einzige neue Abhängigkeit (+ `@types/qrcode`).
 
